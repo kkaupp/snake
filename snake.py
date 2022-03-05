@@ -1,4 +1,4 @@
-import pygame, random, time, os, sys
+import pygame, random, time, os, sys, json
 from pygame.locals import *
 from enum import Enum
 
@@ -47,13 +47,13 @@ def handle_keys(direction):
     global SPEED
     for event in [e for e in pygame.event.get() if e.type == pygame.KEYDOWN]:   # Only handle key events, ignore all other events
         # Change direction
-        if event.key == pygame.K_UP and direction != Direction.DOWN:    # Can't go up, if down before 
+        if (event.key == pygame.K_UP or event.key == pygame.K_w) and direction != Direction.DOWN:    # Can't go up, if down before 
             new_direction = Direction.UP 
-        if event.key == pygame.K_DOWN and direction != Direction.UP: 
+        if (event.key == pygame.K_DOWN or event.key == pygame.K_s) and direction != Direction.UP: 
             new_direction = Direction.DOWN 
-        if event.key == pygame.K_LEFT and direction != Direction.RIGHT: 
+        if (event.key == pygame.K_LEFT or event.key == pygame.K_a) and direction != Direction.RIGHT: 
             new_direction = Direction.LEFT 
-        if event.key == pygame.K_RIGHT and direction != Direction.LEFT: 
+        if (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and direction != Direction.LEFT: 
             new_direction = Direction.RIGHT 
         # Reverse direction
         # if (event.key == pygame.K_UP and direction == Direction.DOWN):
