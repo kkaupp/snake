@@ -1,16 +1,26 @@
 import pygame, random, time, os, sys, json
 from pygame.locals import *
 from enum import Enum
+import argparse
 
+__author__ = 'Kevin Kaupp, Johannes Eulitz, Tatjana Aha'
+__version__ = '4.2'
+
+## Argparse ##
+parser = argparse.ArgumentParser(description='Snake')
+parser.add_argument('-x', '--width', metavar='', type=str, help='Set specific screen width, default value: 1920', default='1920')    # Maybe use required=True
+parser.add_argument('-y', '--height', metavar='', type=str, help='Set specific screen height, default value: 1080', default='1080')    # Maybe use required=True
+parser.add_argument('-b', '--background', metavar='', type=str, help='Set own background image', default='desert.png')    # Maybe use required=True
+args = parser.parse_args()
 
 ## General Game Settings ##
 pygame.init()    # Initialize Game
-pygame.display.set_caption('snoled')
+pygame.display.set_caption('Snake Game for Python class')
 
 ## Music
-pygame.mixer.music.load(os.path.join('sounds', '8_Bit_Fantasy_Adventure_Music.mp3'))
-pygame.mixer.music.play(-1,0.0)
-pygame.mixer.music.set_volume(.3)
+# pygame.mixer.music.load(os.path.join('sounds', '8_Bit_Fantasy_Adventure_Music.mp3'))
+# pygame.mixer.music.play(-1,0.0)
+# pygame.mixer.music.set_volume(.3)
 
 ## Constants ##
 REFRESH_CONTROLLER = pygame.time.Clock()
@@ -21,10 +31,11 @@ SCORE = 0
 SPEED = 0.1
 
 ## Size ##
-WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 720
+WINDOW_WIDTH = int(args.width)
+WINDOW_HEIGHT = int(args.height)
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-BACKGROUND = pygame.image.load(os.path.join('assets', 'desert.png')).convert()
+BACKGROUND = pygame.image.load(os.path.join('assets', args.background)).convert()
+BACKGROUND = pygame.transform.scale(BACKGROUND, (2560, 1000))
 SCALE = 30 
 
 ## Start Positions ##
@@ -109,7 +120,7 @@ def repaint():
 def game_over_screen():
     pygame.mixer.music.pause()
     font = pygame.font.SysFont('Arial', SCALE * 3)
-    render = font.render(f'Game Over SCORE: {SCORE}', True, pygame.Color(255, 255, 255))
+    render = font.render(f'Game Over! SCORE: {SCORE}', True, pygame.Color(255, 255, 255))
     rect = render.get_rect()    # xD
     rect.midtop = (int(WINDOW_WIDTH/2), int(WINDOW_HEIGHT/2))
     WINDOW.blit(render, rect) 
@@ -118,7 +129,7 @@ def game_over_screen():
 def game_over():
     if (snake_position[0] < 0 or snake_position[0] > WINDOW_WIDTH) or (snake_position[1] < 0 or snake_position[1] > WINDOW_HEIGHT) :
         game_over_screen()
-        pause()
+        quit()
     else:
         pass
     for blob in snake_body[1:]:
@@ -128,16 +139,25 @@ def game_over():
         else:
             continue
 
-def pause():
+def quit():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    pygame.quit()
-                    sys.exit()
                 if event.key:
                     pygame.quit()
                     sys.exit()
+
+def pause():
+    paused = True
+    while paused: 
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    paused = False
+    # WINDOW.blit(BACKGROUND, (0, 0))
+    WINDOW.fill(white)
+    message_paused = 'Paused'
+    message
 
 def paint_hud():
     font = pygame.font.SysFont('Arial', SCALE*2)
