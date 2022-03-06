@@ -1,15 +1,29 @@
-import pygame, random, time, os, sys, configparser, levels
+import pygame, random, time, os, sys, configparser, argparse
 from pygame.locals import *
 from enum import Enum
-import argparse
-
+## ToDo: Komentare :(
 __author__ = 'Kevin Kaupp, Johannes Eulitz, Tatjana Aha'
 __version__ = '4.2'
 
+## Read config.ini ##
+config = configparser.ConfigParser()
+config.read(os.path.join('config.ini'))
+SCALE = int(config['config']['scale']) // 2 * 2     # To ensure that it is a multiple of 2
+FPS = int(config['config']['fps'])
+global SCORE
+global SPEED
+SCORE = int(config['config']['score'])
+SPEED = float(config['config']['speed'])
+VOLUME = float(config['config']['volume'])
+WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
+WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
+
+##ToDo: Save changed prefferences in config file (also from settings)
+
 ## Argparse ##
 parser = argparse.ArgumentParser(description='Snake Game for Python class')
-parser.add_argument('-x', '--width', metavar='', type=int, help='Set specific screen width, default value: 1920', default=1260)    # Maybe use required=True
-parser.add_argument('-y', '--height', metavar='', type=int, help='Set specific screen height, default value: 1080', default=720)    # Maybe use required=True
+parser.add_argument('-x', '--width', metavar='', type=int, help='Set specific screen width, default value: ' + str(WINDOW_WIDTH), default=WINDOW_WIDTH)    # Maybe use required=True
+parser.add_argument('-y', '--height', metavar='', type=int, help='Set specific screen height, default value: ' + str(WINDOW_HEIGHT), default=WINDOW_HEIGHT)    # Maybe use required=True
 parser.add_argument('-b', '--background', metavar='', type=str, help='Set own background image', default='desert.jpg')    # Maybe use required=True
 parser.add_argument('-m', '--music', metavar='', type=str, help='Set own music', default='Tequila.mp3')    # Maybe use required=True
 parser.add_argument('-c', '--color', metavar='', type=str, help='Set snake color, supports basic colors', default='white')    # Maybe use required=True
@@ -22,17 +36,10 @@ pygame.display.set_caption('Snake Game for Python class')
 ## Music
 pygame.mixer.music.load(os.path.join('sounds', args.music))
 pygame.mixer.music.play(-1,0.0)
-pygame.mixer.music.set_volume(0.03)
-
+pygame.mixer.music.set_volume(VOLUME)
 
 ## Constants ##
 REFRESH_CONTROLLER = pygame.time.Clock()
-FPS = 60    # FPS
-global SCORE
-global SPEED
-SCORE = 0
-SPEED = 0.1
-SCALE = 30 
 
 ## Size ##
 WINDOW_WIDTH = (args.width) // SCALE * SCALE
@@ -42,8 +49,6 @@ WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 BACKGROUND = pygame.image.load(os.path.join('ressources', args.background)).convert()
 BACKGROUND = pygame.transform.scale(BACKGROUND, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
-## Start Positions ##
-current_level = levels.Level1()
 
 class Direction(Enum):
     UP = 1
@@ -75,15 +80,12 @@ class Character(Moveble_object):
     def __init__(self):
         Moveble_object.__init__(self)
         self.position = [int((WINDOW_WIDTH//SCALE//2)*SCALE - (SCALE/2)), int((WINDOW_HEIGHT//SCALE//2)*SCALE - (SCALE/2))]     # middle of the screen
-        #self.bild = pygame.image.load("ressources/img.png").convert()
-        #self.rect = self.surface.get_rect()
         self.rect = pygame.Rect(self.position[0], self.position[1], SCALE, SCALE)
 
     def draw(self):
         for body in self.body:
             pygame.draw.circle(WINDOW, pygame.Color(args.color), (body[0], body[1]), int(SCALE/2))
         self.rect = pygame.Rect(self.position[0], self.position[1], SCALE, SCALE)
-        #WINDOW.blit(self.bild, self.rect)
 
     def move(self, direction):
         if direction == Direction.UP:
@@ -146,12 +148,12 @@ def handle_keys(direction):
                 break
     return new_direction
 
-def repaint(snake, food):
+def repaint(snake, food, level):
     WINDOW.blit(BACKGROUND, (0, 0))
-    current_level.wall_list.draw(WINDOW)
+    level.wall_list.draw(WINDOW)
     food.draw()
     # Collision Check
-    if pygame.sprite.spritecollideany(snake, current_level.wall_list):
+    if pygame.sprite.spritecollideany(snake, level.wall_list):
         game_over()
 
     for blob in snake.body[1:]:
@@ -165,17 +167,18 @@ def repaint(snake, food):
 def pause():
     paused = True
     while paused:
-        pygame.mixer.music.set_volume(0.2)
+        pygame.mixer.music.set_volume(VOLUME * 0.7)
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     paused = False
-                    pygame.mixer.music.set_volume(1)
+                    pygame.mixer.music.set_volume(VOLUME)
                 elif event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
         pygame.display.update()
 
+## ToDo: Make it pretty, mit ein paar buttons und bessere aufteilung
 def game_over_screen():
     pygame.mixer.music.pause()
     font = pygame.font.Font(os.path.join('ressources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * 3)
@@ -204,7 +207,7 @@ def paint_hud():
     WINDOW.blit(render, rect) 
     pygame.display.flip()
 
-def game():    # Game Loop
+def game(level):    # Game Loop
     snake = Character()
     food = Food()
     direction = Direction.RIGHT    # Initial direction
@@ -213,7 +216,7 @@ def game():    # Game Loop
         direction = handle_keys(direction)    # User input determines direction
         snake.move(direction)       
         snake.get_food(food)
-        repaint(snake, food)
+        repaint(snake, food, level)
         paint_hud()
         pygame.display.update()     # Update Display
         REFRESH_CONTROLLER.tick(FPS)

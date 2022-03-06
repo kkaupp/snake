@@ -1,9 +1,8 @@
-import pygame, os, sys, configparser
+import pygame, configparser
 from pygame.locals import *
 
 config = configparser.ConfigParser()
 config.read('config.ini')
-config.sections()
 SCALE = int(config['config']['scale'])
 
 class Wall(pygame.sprite.Sprite): 
