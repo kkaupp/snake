@@ -7,9 +7,9 @@ __author__ = 'Kevin Kaupp, Johannes Eulitz, Tatjana Aha'
 __version__ = '4.2'
 
 ## Argparse ##
-parser = argparse.ArgumentParser(description='Snake')
-parser.add_argument('-x', '--width', metavar='', type=str, help='Set specific screen width, default value: 1920', default='1920')    # Maybe use required=True
-parser.add_argument('-y', '--height', metavar='', type=str, help='Set specific screen height, default value: 1080', default='1080')    # Maybe use required=True
+parser = argparse.ArgumentParser(description='Snake Game for Python class')
+parser.add_argument('-x', '--width', metavar='', type=int, help='Set specific screen width, default value: 1920', default=1000)    # Maybe use required=True
+parser.add_argument('-y', '--height', metavar='', type=int, help='Set specific screen height, default value: 1080', default=1080)    # Maybe use required=True
 parser.add_argument('-b', '--background', metavar='', type=str, help='Set own background image', default='desert.png')    # Maybe use required=True
 args = parser.parse_args()
 
@@ -31,11 +31,11 @@ SCORE = 0
 SPEED = 0.1
 
 ## Size ##
-WINDOW_WIDTH = int(args.width)
-WINDOW_HEIGHT = int(args.height)
+WINDOW_WIDTH = args.width
+WINDOW_HEIGHT = args.height
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 BACKGROUND = pygame.image.load(os.path.join('assets', args.background)).convert()
-BACKGROUND = pygame.transform.scale(BACKGROUND, (2560, 1000))
+BACKGROUND = pygame.transform.scale(BACKGROUND, (WINDOW_WIDTH, WINDOW_HEIGHT))
 SCALE = 30 
 
 ## Start Positions ##
