@@ -1,6 +1,3 @@
-from msilib.schema import Class
-from turtle import position
-from numpy import delete
 import pygame, random, time, os, sys, configparser, levels
 from pygame.locals import *
 from enum import Enum
@@ -36,6 +33,7 @@ global SPEED
 SCORE = 0
 SPEED = 0.1
 SCALE = 30 
+
 ## Size ##
 WINDOW_WIDTH = (args.width) // SCALE * SCALE
 WINDOW_HEIGHT = (args.height) // SCALE * SCALE
@@ -54,28 +52,45 @@ class Direction(Enum):
     LEFT = 4
 
 class Moveble_object(pygame.sprite.Sprite):
-    position = [0,0]
-
     def __init__(self):
-        self.position = [int((WINDOW_WIDTH//SCALE//2)*SCALE - (SCALE/2)), int((WINDOW_HEIGHT//SCALE//2)*SCALE - (SCALE/2))]     # in der Mitte
+        super().__init__()
+        self.surface = pygame.Surface((SCALE,SCALE))
 
 class Food(Moveble_object):
     def __init__(self):
+        Moveble_object.__init__(self)
+        self.bild = pygame.image.load("ressources/1food.png").convert_alpha()
         self.generate_new_food()
 
     def generate_new_food(self):
-        self.position = [random.randrange(SCALE, WINDOW_WIDTH - SCALE, SCALE), random.randrange(SCALE, WINDOW_HEIGHT - SCALE, SCALE)]
+        self.position = pygame.Rect(random.randrange(SCALE, WINDOW_WIDTH - SCALE, SCALE), random.randrange(SCALE, WINDOW_HEIGHT - SCALE, SCALE), SCALE, SCALE)
+        
+    def draw(self):
+        WINDOW.blit(self.bild, self.position)
 
 class Character(Moveble_object):
     body = [[SCALE, SCALE*2]]
 
+    def __init__(self):
+        Moveble_object.__init__(self)
+        self.position = [int((WINDOW_WIDTH//SCALE//2)*SCALE - (SCALE/2)), int((WINDOW_HEIGHT//SCALE//2)*SCALE - (SCALE/2))]     # middle of the screen
+        #self.bild = pygame.image.load("ressources/img.png").convert()
+        #self.rect = self.surface.get_rect()
+        self.rect = pygame.Rect(self.position[0], self.position[1], SCALE, SCALE)
+
+    def draw(self):
+        for body in self.body:
+            pygame.draw.circle(WINDOW, pygame.Color(args.color), (body[0], body[1]), int(SCALE/2))
+        self.rect = pygame.Rect(self.position[0], self.position[1], SCALE, SCALE)
+        #WINDOW.blit(self.bild, self.rect)
+
     def move(self, direction):
         if direction == Direction.UP:
-            self.position[1] -= SCALE     # SCALE pixel per block
+            self.position[1] -= SCALE
         if direction == Direction.DOWN:
-            self.position[1] += SCALE     
+            self.position[1] += SCALE
         if direction == Direction.LEFT:
-            self.position[0] -= SCALE     
+            self.position[0] -= SCALE
         if direction == Direction.RIGHT:
             self.position[0] += SCALE
 
@@ -131,13 +146,20 @@ def handle_keys(direction):
     return new_direction
 
 def repaint(snake, food):
-    #WINDOW.fill(pygame.Color(0, 0, 0))    # BACKGROUND color
     WINDOW.blit(BACKGROUND, (0, 0))
     current_level.wall_list.draw(WINDOW)
-    print("snake:", snake.position[0], snake.position[1])
-    for body in snake.body:
-        pygame.draw.circle(WINDOW, pygame.Color(args.color), (body[0], body[1]), int(SCALE/2))
-    pygame.draw.rect(WINDOW, pygame.Color(255, 0, 0), pygame.Rect(food.position[0], food.position[1], int(SCALE), int(SCALE)))
+    food.draw()
+    # Collision Check
+    if pygame.sprite.spritecollideany(snake, current_level.wall_list):
+        game_over()
+
+    for blob in snake.body[1:]:
+        if (snake.position[0] == blob[0] and snake.position[1] == blob[1]):
+            game_over()
+        else:
+            continue
+
+    snake.draw()
 
 def pause():
     paused = True
@@ -151,7 +173,6 @@ def pause():
                 elif event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
-        # WINDOW.fill(pygame.Color('black'))
         pygame.display.update()
 
 def game_over_screen():
@@ -163,8 +184,8 @@ def game_over_screen():
     WINDOW.blit(render, rect) 
     pygame.display.flip()
 
-def game_over(snake):
-    #collision = pygame.sprite.spritecollide(snake, current_level.wall_list, False)
+def game_over():
+    print("Collision!")
     pass
 
 def quit():
@@ -192,7 +213,6 @@ def game():    # Game Loop
         snake.move(direction)       
         snake.get_food(food)
         repaint(snake, food)
-        game_over(snake)
         paint_hud()
         pygame.display.update()     # Update Display
         REFRESH_CONTROLLER.tick(FPS)
