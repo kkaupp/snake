@@ -20,4 +20,9 @@ class Wall(pygame.sprite.Sprite):
 
 class Level():
     pass
+
+class Level1(Level):
+    pass
+
 wall_list.add(Wall(0, 0, 20, 250, (255, 0, 0)))
+
