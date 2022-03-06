@@ -85,7 +85,7 @@ class Character(Moveble_object):
     def draw(self):
         for body in self.body:
             pygame.draw.circle(WINDOW, pygame.Color(args.color), (body[0], body[1]), int(SCALE/2))
-        self.rect = pygame.Rect(self.position[0], self.position[1], SCALE, SCALE)
+        self.rect = pygame.Rect(self.position[0] - SCALE/2, self.position[1] - SCALE/2, SCALE, SCALE) # /2 due to the offcenterd position
 
     def move(self, direction):
         if direction == Direction.UP:
@@ -180,7 +180,7 @@ def pause():
 
 ## ToDo: Make it pretty, mit ein paar buttons und bessere aufteilung
 def game_over_screen():
-    pygame.mixer.music.pause()
+    pygame.mixer.music.set_volume(VOLUME * 0.7)
     font = pygame.font.Font(os.path.join('ressources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * 3)
     render = font.render(f'Game Over! SCORE: {SCORE}', True, pygame.Color('black'))
     rect = render.get_rect()    # xD
