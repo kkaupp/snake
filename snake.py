@@ -1,4 +1,6 @@
-from matplotlib import scale
+from msilib.schema import Class
+from turtle import position
+from numpy import delete
 import pygame, random, time, os, sys, configparser, levels
 from pygame.locals import *
 from enum import Enum
@@ -32,7 +34,7 @@ FPS = 60    # FPS
 global SCORE
 global SPEED
 SCORE = 0
-SPEED = 1
+SPEED = 0.1
 SCALE = 30 
 ## Size ##
 WINDOW_WIDTH = (args.width) // SCALE * SCALE
@@ -43,13 +45,6 @@ BACKGROUND = pygame.image.load(os.path.join('ressources', args.background)).conv
 BACKGROUND = pygame.transform.scale(BACKGROUND, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
 ## Start Positions ##
-snake_position = [int((WINDOW_WIDTH//SCALE//2)*SCALE - (SCALE/2)), int((WINDOW_HEIGHT//SCALE//2)*SCALE - (SCALE/2))]     # in der Mitte
-print(snake_position)
-snake_body = [[SCALE, SCALE*2]]
-food_position = [0, 0]
-food_position[0] = random.randrange(SCALE, WINDOW_WIDTH - SCALE, SCALE)
-food_position[1] = random.randrange(SCALE, WINDOW_HEIGHT - SCALE, SCALE)
-
 current_level = levels.Level1()
 
 class Direction(Enum):
@@ -57,7 +52,55 @@ class Direction(Enum):
     DOWN = 2
     RIGHT = 3
     LEFT = 4
-    
+
+class Moveble_object(pygame.sprite.Sprite):
+    position = [0,0]
+
+    def __init__(self):
+        self.position = [int((WINDOW_WIDTH//SCALE//2)*SCALE - (SCALE/2)), int((WINDOW_HEIGHT//SCALE//2)*SCALE - (SCALE/2))]     # in der Mitte
+
+class Food(Moveble_object):
+    def __init__(self):
+        self.generate_new_food()
+
+    def generate_new_food(self):
+        self.position = [random.randrange(SCALE, WINDOW_WIDTH - SCALE, SCALE), random.randrange(SCALE, WINDOW_HEIGHT - SCALE, SCALE)]
+
+class Character(Moveble_object):
+    body = [[SCALE, SCALE*2]]
+
+    def move(self, direction):
+        if direction == Direction.UP:
+            self.position[1] -= SCALE     # SCALE pixel per block
+        if direction == Direction.DOWN:
+            self.position[1] += SCALE     
+        if direction == Direction.LEFT:
+            self.position[0] -= SCALE     
+        if direction == Direction.RIGHT:
+            self.position[0] += SCALE
+
+        if self.position[0] > WINDOW_WIDTH:
+            self.position[0] = int(0 + SCALE / 2)
+        
+        if self.position[0] < 0:
+            self.position[0] = int(WINDOW_WIDTH - SCALE / 2)
+
+        if self.position[1] > WINDOW_HEIGHT:
+            self.position[1] = int(0 + SCALE / 2)
+
+        if self.position[1] < 0:
+            self.position[1] = int(WINDOW_HEIGHT - SCALE / 2)
+
+        self.body.insert(0, list(self.position))
+
+    def get_food(self, food):
+        global SCORE
+        if self.position[0] - SCALE/2 == food.position[0] and self.position[1] - SCALE/2 == food.position[1]:
+            SCORE += 1
+            food.generate_new_food()
+        else:
+            self.body.pop()    # enlarge snake
+
 def handle_keys(direction):
     new_direction = direction   # Keep direction if no event
     global SPEED
@@ -87,51 +130,14 @@ def handle_keys(direction):
                 break
     return new_direction
 
-def move_snake(direction):
-    if direction == Direction.UP:
-        snake_position[1] -= SCALE     # SCALE pixel per block
-    if direction == Direction.DOWN:
-        snake_position[1] += SCALE     
-    if direction == Direction.LEFT:
-        snake_position[0] -= SCALE     
-    if direction == Direction.RIGHT:
-        snake_position[0] += SCALE
-
-    if snake_position[0] > WINDOW_WIDTH:
-        snake_position[0] = int(0 + SCALE / 2)
-    
-    if snake_position[0] < 0:
-        snake_position[0] = int(WINDOW_WIDTH - SCALE / 2)
-
-    if snake_position[1] > WINDOW_HEIGHT:
-        snake_position[1] = int(0 + SCALE / 2)
-
-    if snake_position[1] < 0:
-        snake_position[1] = int(WINDOW_HEIGHT - SCALE / 2)
-
-    snake_body.insert(0, list(snake_position))
-
-def generate_new_food():
-    food_position[0] = random.randrange(SCALE, WINDOW_WIDTH - SCALE, SCALE)
-    food_position[1] = random.randrange(SCALE, WINDOW_HEIGHT - SCALE, SCALE)
-          
-def get_food():
-    global SCORE
-   # if abs(snake_position[0] - food_position[0]) < SCALE/2 and abs(snake_position[1] - food_position[1]) < SCALE/2:
-    if snake_position[0] - SCALE/2 == food_position[0] and snake_position[1] - SCALE/2 == food_position[1]:
-        SCORE += 1
-        generate_new_food()
-    else:
-        snake_body.pop()    # enlarge snake
-
-def repaint():
+def repaint(snake, food):
     #WINDOW.fill(pygame.Color(0, 0, 0))    # BACKGROUND color
     WINDOW.blit(BACKGROUND, (0, 0))
     current_level.wall_list.draw(WINDOW)
-    print("snake:", snake_position[0], snake_position[1])
-    for body in snake_body:
+    print("snake:", snake.position[0], snake.position[1])
+    for body in snake.body:
         pygame.draw.circle(WINDOW, pygame.Color(args.color), (body[0], body[1]), int(SCALE/2))
-    pygame.draw.rect(WINDOW, pygame.Color(255, 0, 0), pygame.Rect(food_position[0], food_position[1], int(SCALE), int(SCALE)))
+    pygame.draw.rect(WINDOW, pygame.Color(255, 0, 0), pygame.Rect(food.position[0], food.position[1], int(SCALE), int(SCALE)))
 
 def pause():
     paused = True
@@ -157,18 +163,9 @@ def game_over_screen():
     WINDOW.blit(render, rect) 
     pygame.display.flip()
 
-def game_over():
-    if (snake_position[0] < 0 or snake_position[0] > WINDOW_WIDTH) or (snake_position[1] < 0 or snake_position[1] > WINDOW_HEIGHT) :
-        game_over_screen()
-        quit()
-    else:
-        pass
-    for blob in snake_body[1:]:
-        if (snake_position[0] == blob[0] and snake_position[1] == blob[1]):
-            game_over_screen()
-            quit()
-        else:
-            continue
+def game_over(snake):
+    #collision = pygame.sprite.spritecollide(snake, current_level.wall_list, False)
+    pass
 
 def quit():
     while True:
@@ -186,14 +183,16 @@ def paint_hud():
     pygame.display.flip()
 
 def game():    # Game Loop
+    snake = Character()
+    food = Food()
     direction = Direction.RIGHT    # Initial direction
     game_running = True
     while game_running:
         direction = handle_keys(direction)    # User input determines direction
-        move_snake(direction)       
-        get_food()
-        repaint()
-        game_over()
+        snake.move(direction)       
+        snake.get_food(food)
+        repaint(snake, food)
+        game_over(snake)
         paint_hud()
         pygame.display.update()     # Update Display
         REFRESH_CONTROLLER.tick(FPS)
