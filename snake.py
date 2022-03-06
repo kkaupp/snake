@@ -1,7 +1,6 @@
-import pygame, random, time, os, sys, json
+import pygame, random, time, os, sys, configparser, levels
 from pygame.locals import *
 from enum import Enum
-
 
 ## General Game Settings ##
 pygame.init()    # Initialize Game
@@ -10,7 +9,7 @@ pygame.display.set_caption('snoled')
 ## Music
 pygame.mixer.music.load(os.path.join('sounds', '8_Bit_Fantasy_Adventure_Music.mp3'))
 pygame.mixer.music.play(-1,0.0)
-pygame.mixer.music.set_volume(.3)
+pygame.mixer.music.set_volume(0.03)
 
 ## Constants ##
 REFRESH_CONTROLLER = pygame.time.Clock()
@@ -24,15 +23,13 @@ SPEED = 0.1
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-BACKGROUND = pygame.image.load(os.path.join('assets', 'desert.png')).convert()
+BACKGROUND = pygame.image.load(os.path.join('ressources', 'desert.png')).convert()
 SCALE = 30 
 
 ## Start Positions ##
-snake_position = [SCALE, SCALE*2]     # Upper left corner = [0, 0]
+snake_position = [WINDOW_WIDTH/2, WINDOW_HEIGHT/2]     # Upper left corner = [0, 0]
 snake_body = [[SCALE, SCALE*2]]
 food_position = [0, 0]
-# food_position[0] = random.randint(10, ((WINDOW_WIDTH - SCALE) // SCALE)) * SCALE
-# food_position[1] = random.randint(10, ((WINDOW_HEIGHT - SCALE) // SCALE)) * SCALE
 food_position[0] = random.randrange(SCALE, WINDOW_WIDTH, SCALE)
 food_position[1] = random.randrange(SCALE, WINDOW_HEIGHT, SCALE)
 
@@ -55,16 +52,6 @@ def handle_keys(direction):
             new_direction = Direction.LEFT 
         if (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and direction != Direction.LEFT: 
             new_direction = Direction.RIGHT 
-        # Reverse direction
-        # if (event.key == pygame.K_UP and direction == Direction.DOWN):
-        #     new_direction = Direction.UP
-        # if (event.key == pygame.K_DOWN and direction == Direction.UP):
-        #     new_direction = Direction.DOWN
-        # if (event.key == pygame.K_LEFT and direction == Direction.RIGHT):
-        #     new_direction = Direction.LEFT
-        # if (event.key == pygame.K_RIGHT and direction == Direction.LEFT):
-        #     new_direction = Direction.RIGHT
-        # Slow down bro
         if (event.key == pygame.K_UP and direction == Direction.DOWN) or (event.key == pygame.K_DOWN and direction == Direction.UP) or (event.key == pygame.K_LEFT and direction == Direction.RIGHT) or (event.key == pygame.K_RIGHT and direction == Direction.LEFT): 
             while SPEED < 1:
                 SPEED += 0.05
@@ -87,6 +74,18 @@ def move_snake(direction):
         snake_position[0] += SCALE
     snake_body.insert(0, list(snake_position))
 
+    if snake_position[0] > WINDOW_WIDTH:
+        snake_position[0] = 0
+    
+    if snake_position[0] < 0:
+        snake_position[0] = WINDOW_WIDTH
+
+    if snake_position[1] > WINDOW_HEIGHT:
+        snake_position[1] = 0
+
+    if snake_position[1] < 0:
+        snake_position[1] = WINDOW_HEIGHT
+
 def generate_new_food():
     food_position[0] = random.randrange(SCALE, WINDOW_WIDTH, SCALE)
     food_position[1] = random.randrange(SCALE, WINDOW_HEIGHT, SCALE)
@@ -102,6 +101,7 @@ def get_food():
 def repaint():
     #WINDOW.fill(pygame.Color(0, 0, 0))    # BACKGROUND color
     WINDOW.blit(BACKGROUND, (0, 0))
+    #wall_list.draw(WINDOW)
     for body in snake_body:
         pygame.draw.circle(WINDOW, pygame.Color(255, 255, 255), (body[0], body[1]), int(SCALE/2))
     pygame.draw.rect(WINDOW, pygame.Color(255, 0, 0), pygame.Rect(food_position[0]-int(SCALE/2), food_position[1]-int(SCALE/2), int(SCALE), int(SCALE)))
@@ -140,7 +140,7 @@ def pause():
                     sys.exit()
 
 def paint_hud():
-    font = pygame.font.SysFont('Arial', SCALE*2)
+    font = pygame.font.Font(os.path.join('ressources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE*2)
     render = font.render(f'SCORE: {SCORE}', True, pygame.Color(255, 255, 255))
     rect = render.get_rect()    # xD
     WINDOW.blit(render, rect) 
@@ -159,15 +159,3 @@ def game():    # Game Loop
         pygame.display.update()     # Update Display
         REFRESH_CONTROLLER.tick(FPS)
         time.sleep(SPEED)
-
-if __name__ == '__main__':
-    while True:
-        #WINDOW.fill((0,0,0))
-        #font = pygame.font.SysFont('Arial', SCALE*2)
-        #font.render('Main Menu', True, pygame.Color(255, 255, 255))
-
-        #btn_startGame = pygame.Rect(50, 100, 200, 50)
-        #btn_settings = pygame.Rect(50, 200, 200, 50)
-        #btn_credits = 
-        #btn_exit =
-        game()
