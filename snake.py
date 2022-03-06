@@ -72,7 +72,7 @@ def handle_keys(direction):
         if (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and direction != Direction.LEFT: 
             new_direction = Direction.RIGHT 
         # Slow down bro
-        if (event.key == pygame.K_UP and direction == Direction.DOWN) or (event.key == pygame.K_DOWN and direction == Direction.UP) or (event.key == pygame.K_LEFT and direction == Direction.RIGHT) or (event.key == pygame.K_RIGHT and direction == Direction.LEFT): 
+        if ((event.key == pygame.K_UP or event.key == pygame.K_w) and direction == Direction.DOWN) or ((event.key == pygame.K_DOWN or event.key == pygame.K_s) and direction == Direction.UP) or ((event.key == pygame.K_LEFT or event.key == pygame.K_a) and direction == Direction.RIGHT) or ((event.key == pygame.K_RIGHT or event.key == pygame.K_d) and direction == Direction.LEFT): 
             while SPEED < 1:
                 SPEED += 0.05
                 break
