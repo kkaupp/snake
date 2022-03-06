@@ -59,14 +59,15 @@ class Moveble_object(pygame.sprite.Sprite):
 class Food(Moveble_object):
     def __init__(self):
         Moveble_object.__init__(self)
-        self.bild = pygame.image.load("ressources/1food.png").convert_alpha()
         self.generate_new_food()
 
     def generate_new_food(self):
+        foodimage = str(random.randrange(0, 3, 1))
+        self.image = pygame.image.load(os.path.join('ressources', f'{foodimage}food.png')).convert_alpha()
         self.position = pygame.Rect(random.randrange(SCALE, WINDOW_WIDTH - SCALE, SCALE), random.randrange(SCALE, WINDOW_HEIGHT - SCALE, SCALE), SCALE, SCALE)
         
     def draw(self):
-        WINDOW.blit(self.bild, self.position)
+        WINDOW.blit(self.image, self.position)
 
 class Character(Moveble_object):
     body = [[SCALE, SCALE*2]]
@@ -177,7 +178,7 @@ def pause():
 
 def game_over_screen():
     pygame.mixer.music.pause()
-    font = pygame.font.SysFont('Arial', SCALE * 3)
+    font = pygame.font.Font(os.path.join('ressources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * 3)
     render = font.render(f'Game Over! SCORE: {SCORE}', True, pygame.Color('black'))
     rect = render.get_rect()    # xD
     rect.midtop = (WINDOW_WIDTH/2-SCALE, WINDOW_HEIGHT/2-SCALE)
@@ -185,8 +186,8 @@ def game_over_screen():
     pygame.display.flip()
 
 def game_over():
-    print("Collision!")
-    pass
+    game_over_screen()
+    pause()
 
 def quit():
     while True:
@@ -199,7 +200,7 @@ def quit():
 def paint_hud():
     font = pygame.font.Font(os.path.join('ressources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE*2)
     render = font.render(f'SCORE: {SCORE}', True, pygame.Color('black'))
-    rect = render.get_rect()    # xD
+    rect = render.get_rect()
     WINDOW.blit(render, rect) 
     pygame.display.flip()
 
