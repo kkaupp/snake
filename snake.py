@@ -1,3 +1,4 @@
+from matplotlib import scale
 import pygame, random, time, os, sys, configparser, levels
 from pygame.locals import *
 from enum import Enum
@@ -8,9 +9,9 @@ __version__ = '4.2'
 
 ## Argparse ##
 parser = argparse.ArgumentParser(description='Snake Game for Python class')
-parser.add_argument('-x', '--width', metavar='', type=int, help='Set specific screen width, default value: 1920', default=1280)    # Maybe use required=True
+parser.add_argument('-x', '--width', metavar='', type=int, help='Set specific screen width, default value: 1920', default=1260)    # Maybe use required=True
 parser.add_argument('-y', '--height', metavar='', type=int, help='Set specific screen height, default value: 1080', default=720)    # Maybe use required=True
-parser.add_argument('-b', '--background', metavar='', type=str, help='Set own background image', default='pepe.png')    # Maybe use required=True
+parser.add_argument('-b', '--background', metavar='', type=str, help='Set own background image', default='desert.jpg')    # Maybe use required=True
 parser.add_argument('-m', '--music', metavar='', type=str, help='Set own music', default='Tequila.mp3')    # Maybe use required=True
 parser.add_argument('-c', '--color', metavar='', type=str, help='Set snake color, supports basic colors', default='white')    # Maybe use required=True
 args = parser.parse_args()
@@ -31,24 +32,25 @@ FPS = 60    # FPS
 global SCORE
 global SPEED
 SCORE = 0
-SPEED = 0.1
-
+SPEED = 1
+SCALE = 30 
 ## Size ##
-WINDOW_WIDTH = args.width
-WINDOW_HEIGHT = args.height
+WINDOW_WIDTH = (args.width) // SCALE * SCALE
+WINDOW_HEIGHT = (args.height) // SCALE * SCALE
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
-BACKGROUND = pygame.image.load(os.path.join('assets', args.background)).convert()
+BACKGROUND = pygame.image.load(os.path.join('ressources', args.background)).convert()
 BACKGROUND = pygame.transform.scale(BACKGROUND, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
-SCALE = 30 
-
 ## Start Positions ##
-snake_position = [WINDOW_WIDTH/2, WINDOW_HEIGHT/2]     # Upper left corner = [0, 0]
+snake_position = [int((WINDOW_WIDTH//SCALE//2)*SCALE - (SCALE/2)), int((WINDOW_HEIGHT//SCALE//2)*SCALE - (SCALE/2))]     # in der Mitte
+print(snake_position)
 snake_body = [[SCALE, SCALE*2]]
 food_position = [0, 0]
-food_position[0] = random.randrange(SCALE, WINDOW_WIDTH, SCALE)
-food_position[1] = random.randrange(SCALE, WINDOW_HEIGHT, SCALE)
+food_position[0] = random.randrange(SCALE, WINDOW_WIDTH - SCALE, SCALE)
+food_position[1] = random.randrange(SCALE, WINDOW_HEIGHT - SCALE, SCALE)
+
+current_level = levels.Level1()
 
 class Direction(Enum):
     UP = 1
@@ -75,8 +77,6 @@ def handle_keys(direction):
 
         # Slow down bro
         if ((event.key == pygame.K_UP or event.key == pygame.K_w) and direction == Direction.DOWN) or ((event.key == pygame.K_DOWN or event.key == pygame.K_s) and direction == Direction.UP) or ((event.key == pygame.K_LEFT or event.key == pygame.K_a) and direction == Direction.RIGHT) or ((event.key == pygame.K_RIGHT or event.key == pygame.K_d) and direction == Direction.LEFT): 
-
-       
             while SPEED < 1:
                 SPEED += 0.05
                 break
@@ -96,27 +96,29 @@ def move_snake(direction):
         snake_position[0] -= SCALE     
     if direction == Direction.RIGHT:
         snake_position[0] += SCALE
-    snake_body.insert(0, list(snake_position))
 
     if snake_position[0] > WINDOW_WIDTH:
-        snake_position[0] = 0
+        snake_position[0] = int(0 + SCALE / 2)
     
     if snake_position[0] < 0:
-        snake_position[0] = WINDOW_WIDTH
+        snake_position[0] = int(WINDOW_WIDTH - SCALE / 2)
 
     if snake_position[1] > WINDOW_HEIGHT:
-        snake_position[1] = 0
+        snake_position[1] = int(0 + SCALE / 2)
 
     if snake_position[1] < 0:
-        snake_position[1] = WINDOW_HEIGHT
+        snake_position[1] = int(WINDOW_HEIGHT - SCALE / 2)
+
+    snake_body.insert(0, list(snake_position))
 
 def generate_new_food():
-    food_position[0] = random.randrange(SCALE, WINDOW_WIDTH, SCALE)
-    food_position[1] = random.randrange(SCALE, WINDOW_HEIGHT, SCALE)
+    food_position[0] = random.randrange(SCALE, WINDOW_WIDTH - SCALE, SCALE)
+    food_position[1] = random.randrange(SCALE, WINDOW_HEIGHT - SCALE, SCALE)
           
 def get_food():
     global SCORE
-    if abs(snake_position[0] - food_position[0]) < SCALE/2 and abs(snake_position[1] - food_position[1]) < SCALE/2:
+   # if abs(snake_position[0] - food_position[0]) < SCALE/2 and abs(snake_position[1] - food_position[1]) < SCALE/2:
+    if snake_position[0] - SCALE/2 == food_position[0] and snake_position[1] - SCALE/2 == food_position[1]:
         SCORE += 1
         generate_new_food()
     else:
@@ -125,10 +127,11 @@ def get_food():
 def repaint():
     #WINDOW.fill(pygame.Color(0, 0, 0))    # BACKGROUND color
     WINDOW.blit(BACKGROUND, (0, 0))
-    #wall_list.draw(WINDOW)
+    current_level.wall_list.draw(WINDOW)
+    print("snake:", snake_position[0], snake_position[1])
     for body in snake_body:
         pygame.draw.circle(WINDOW, pygame.Color(args.color), (body[0], body[1]), int(SCALE/2))
-    pygame.draw.rect(WINDOW, pygame.Color(255, 0, 0), pygame.Rect(food_position[0]-int(SCALE/2), food_position[1]-int(SCALE/2), int(SCALE), int(SCALE)))
+    pygame.draw.rect(WINDOW, pygame.Color(255, 0, 0), pygame.Rect(food_position[0], food_position[1], int(SCALE), int(SCALE)))
 
 def pause():
     paused = True
@@ -150,7 +153,7 @@ def game_over_screen():
     font = pygame.font.SysFont('Arial', SCALE * 3)
     render = font.render(f'Game Over! SCORE: {SCORE}', True, pygame.Color('black'))
     rect = render.get_rect()    # xD
-    rect.midtop = (WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
+    rect.midtop = (WINDOW_WIDTH/2-SCALE, WINDOW_HEIGHT/2-SCALE)
     WINDOW.blit(render, rect) 
     pygame.display.flip()
 

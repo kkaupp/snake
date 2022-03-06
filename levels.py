@@ -1,6 +1,10 @@
 import pygame, os, sys, configparser
 from pygame.locals import *
-wall_list = pygame.sprite.Group()
+
+config = configparser.ConfigParser()
+config.read('config.ini')
+config.sections()
+SCALE = int(config['config']['scale'])
 
 class Wall(pygame.sprite.Sprite): 
     def __init__(self, x, y, width, height, color):
@@ -10,7 +14,6 @@ class Wall(pygame.sprite.Sprite):
             color - color of the wall
         """
         super().__init__()
- 
         self.image = pygame.Surface([width, height])
         self.image.fill(color)
  
@@ -18,11 +21,19 @@ class Wall(pygame.sprite.Sprite):
         self.rect.y = y
         self.rect.x = x
 
-class Level():
-    pass
+class Level(object):
+    wall_list = None
+
+    def __init__(self):
+        self.wall_list = pygame.sprite.Group()
 
 class Level1(Level):
-    pass
+    def __init__(self):
+        super().__init__()
+        walls = [   [0, 0, SCALE, SCALE * 7, (255, 0, 0)], # Wall top left corner, down
+                    [0, 0, SCALE * 7, SCALE, (255, 0, 0)] # Wall top left corner, right
+                ]
 
-wall_list.add(Wall(0, 0, 20, 250, (255, 0, 0)))
-
+        for parameter in walls:
+            wall = Wall(parameter[0], parameter[1], parameter[2], parameter[3], parameter[4])
+            self.wall_list.add(wall)
