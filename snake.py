@@ -57,6 +57,9 @@ def handle_keys(direction):
     new_direction = direction   # Keep direction if no event
     global SPEED
     for event in [e for e in pygame.event.get() if e.type == pygame.KEYDOWN]:   # Only handle key events, ignore all other events
+        # Pause
+        if event.key == pygame.K_SPACE:
+            pause()
         # Change direction
         if (event.key == pygame.K_UP or event.key == pygame.K_w) and direction != Direction.DOWN:    # Can't go up, if down before 
             new_direction = Direction.UP 
@@ -117,12 +120,28 @@ def repaint():
         pygame.draw.circle(WINDOW, pygame.Color(255, 255, 255), (body[0], body[1]), int(SCALE/2))
     pygame.draw.rect(WINDOW, pygame.Color(255, 0, 0), pygame.Rect(food_position[0]-int(SCALE/2), food_position[1]-int(SCALE/2), int(SCALE), int(SCALE)))
 
+
+def pause():
+    paused = True
+    while paused:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    paused = False
+                    print('false')
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+        WINDOW.fill(pygame.Color(0, 0, 0, 128))
+        pygame.display.update()
+    
+
 def game_over_screen():
     pygame.mixer.music.pause()
     font = pygame.font.SysFont('Arial', SCALE * 3)
     render = font.render(f'Game Over! SCORE: {SCORE}', True, pygame.Color(255, 255, 255))
     rect = render.get_rect()    # xD
-    rect.midtop = (int(WINDOW_WIDTH/2), int(WINDOW_HEIGHT/2))
+    rect.midtop = (WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
     WINDOW.blit(render, rect) 
     pygame.display.flip()
 
@@ -135,7 +154,7 @@ def game_over():
     for blob in snake_body[1:]:
         if (snake_position[0] == blob[0] and snake_position[1] == blob[1]):
             game_over_screen()
-            pause()
+            quit()
         else:
             continue
 
@@ -146,18 +165,6 @@ def quit():
                 if event.key:
                     pygame.quit()
                     sys.exit()
-
-def pause():
-    paused = True
-    while paused: 
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    paused = False
-    # WINDOW.blit(BACKGROUND, (0, 0))
-    WINDOW.fill(white)
-    message_paused = 'Paused'
-    message
 
 def paint_hud():
     font = pygame.font.SysFont('Arial', SCALE*2)
