@@ -1,15 +1,29 @@
 import pygame, random, time, os, sys, configparser, levels
 from pygame.locals import *
 from enum import Enum
+import argparse
+
+__author__ = 'Kevin Kaupp, Johannes Eulitz, Tatjana Aha'
+__version__ = '4.2'
+
+## Argparse ##
+parser = argparse.ArgumentParser(description='Snake Game for Python class')
+parser.add_argument('-x', '--width', metavar='', type=int, help='Set specific screen width, default value: 1920', default=1920)    # Maybe use required=True
+parser.add_argument('-y', '--height', metavar='', type=int, help='Set specific screen height, default value: 1080', default=1080)    # Maybe use required=True
+parser.add_argument('-b', '--background', metavar='', type=str, help='Set own background image', default='pepe.png')    # Maybe use required=True
+parser.add_argument('-m', '--music', metavar='', type=str, help='Set own music', default='Tequila.mp3')    # Maybe use required=True
+parser.add_argument('-c', '--color', metavar='', type=str, help='Set snake color, supports basic colors', default='white')    # Maybe use required=True
+args = parser.parse_args()
 
 ## General Game Settings ##
 pygame.init()    # Initialize Game
-pygame.display.set_caption('snoled')
+pygame.display.set_caption('Snake Game for Python class')
 
 ## Music
-pygame.mixer.music.load(os.path.join('sounds', '8_Bit_Fantasy_Adventure_Music.mp3'))
+pygame.mixer.music.load(os.path.join('sounds', args.music))
 pygame.mixer.music.play(-1,0.0)
 pygame.mixer.music.set_volume(0.03)
+
 
 ## Constants ##
 REFRESH_CONTROLLER = pygame.time.Clock()
@@ -20,10 +34,15 @@ SCORE = 0
 SPEED = 0.1
 
 ## Size ##
-WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 720
+WINDOW_WIDTH = args.width
+WINDOW_HEIGHT = args.height
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-BACKGROUND = pygame.image.load(os.path.join('ressources', 'desert.png')).convert()
+
+BACKGROUND = pygame.image.load(os.path.join('assets', args.background)).convert()
+BACKGROUND = pygame.transform.scale(BACKGROUND, (WINDOW_WIDTH, WINDOW_HEIGHT))
+
+
+
 SCALE = 30 
 
 ## Start Positions ##
@@ -43,6 +62,9 @@ def handle_keys(direction):
     new_direction = direction   # Keep direction if no event
     global SPEED
     for event in [e for e in pygame.event.get() if e.type == pygame.KEYDOWN]:   # Only handle key events, ignore all other events
+        # Pause
+        if event.key == pygame.K_SPACE:
+            pause()
         # Change direction
         if (event.key == pygame.K_UP or event.key == pygame.K_w) and direction != Direction.DOWN:    # Can't go up, if down before 
             new_direction = Direction.UP 
@@ -52,12 +74,16 @@ def handle_keys(direction):
             new_direction = Direction.LEFT 
         if (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and direction != Direction.LEFT: 
             new_direction = Direction.RIGHT 
-        if (event.key == pygame.K_UP and direction == Direction.DOWN) or (event.key == pygame.K_DOWN and direction == Direction.UP) or (event.key == pygame.K_LEFT and direction == Direction.RIGHT) or (event.key == pygame.K_RIGHT and direction == Direction.LEFT): 
+
+        # Slow down bro
+        if ((event.key == pygame.K_UP or event.key == pygame.K_w) and direction == Direction.DOWN) or ((event.key == pygame.K_DOWN or event.key == pygame.K_s) and direction == Direction.UP) or ((event.key == pygame.K_LEFT or event.key == pygame.K_a) and direction == Direction.RIGHT) or ((event.key == pygame.K_RIGHT or event.key == pygame.K_d) and direction == Direction.LEFT): 
+
+       
             while SPEED < 1:
                 SPEED += 0.05
                 break
         # I am SPEED.
-        if (event.key == pygame.K_UP and direction == Direction.UP) or (event.key == pygame.K_DOWN and direction == Direction.DOWN) or (event.key == pygame.K_LEFT and direction == Direction.LEFT) or (event.key == pygame.K_RIGHT and direction == Direction.RIGHT):
+        if ((event.key == pygame.K_UP or event.key == pygame.K_w) and direction == Direction.UP) or ((event.key == pygame.K_DOWN or event.key == pygame.K_s) and direction == Direction.DOWN) or ((event.key == pygame.K_LEFT or event.key == pygame.K_a) and direction == Direction.LEFT) or ((event.key == pygame.K_RIGHT or event.key == pygame.K_d) and direction == Direction.RIGHT):
             while SPEED > 0.051:
                 SPEED -= 0.05
                 break
@@ -103,45 +129,57 @@ def repaint():
     WINDOW.blit(BACKGROUND, (0, 0))
     #wall_list.draw(WINDOW)
     for body in snake_body:
-        pygame.draw.circle(WINDOW, pygame.Color(255, 255, 255), (body[0], body[1]), int(SCALE/2))
+        pygame.draw.circle(WINDOW, pygame.Color(args.color), (body[0], body[1]), int(SCALE/2))
     pygame.draw.rect(WINDOW, pygame.Color(255, 0, 0), pygame.Rect(food_position[0]-int(SCALE/2), food_position[1]-int(SCALE/2), int(SCALE), int(SCALE)))
+
+def pause():
+    paused = True
+    while paused:
+        pygame.mixer.music.set_volume(0.2)
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    paused = False
+                    pygame.mixer.music.set_volume(1)
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+        # WINDOW.fill(pygame.Color('black'))
+        pygame.display.update()
 
 def game_over_screen():
     pygame.mixer.music.pause()
     font = pygame.font.SysFont('Arial', SCALE * 3)
-    render = font.render(f'Game Over SCORE: {SCORE}', True, pygame.Color(255, 255, 255))
+    render = font.render(f'Game Over! SCORE: {SCORE}', True, pygame.Color('black'))
     rect = render.get_rect()    # xD
-    rect.midtop = (int(WINDOW_WIDTH/2), int(WINDOW_HEIGHT/2))
+    rect.midtop = (WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
     WINDOW.blit(render, rect) 
     pygame.display.flip()
 
 def game_over():
     if (snake_position[0] < 0 or snake_position[0] > WINDOW_WIDTH) or (snake_position[1] < 0 or snake_position[1] > WINDOW_HEIGHT) :
         game_over_screen()
-        pause()
+        quit()
     else:
         pass
     for blob in snake_body[1:]:
         if (snake_position[0] == blob[0] and snake_position[1] == blob[1]):
             game_over_screen()
-            pause()
+            quit()
         else:
             continue
 
-def pause():
+def quit():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    pygame.quit()
-                    sys.exit()
                 if event.key:
                     pygame.quit()
                     sys.exit()
 
 def paint_hud():
     font = pygame.font.Font(os.path.join('ressources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE*2)
-    render = font.render(f'SCORE: {SCORE}', True, pygame.Color(255, 255, 255))
+    render = font.render(f'SCORE: {SCORE}', True, pygame.Color('black'))
     rect = render.get_rect()    # xD
     WINDOW.blit(render, rect) 
     pygame.display.flip()
