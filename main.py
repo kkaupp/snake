@@ -77,8 +77,6 @@ def options():
         OPTIONS_VOLUME_DOWN.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_VOLUME_DOWN.update(WINDOW)
 
-        OPTIONS_VOLUME
-
         OPTIONS_VOLUME_UP = Button(image=None, pos=(WINDOW_WIDTH/2 + SCALE*2, WINDOW_HEIGHT/3), text_input="+", font=font(2), base_color="White", hovering_color="Green")
         OPTIONS_VOLUME_UP.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_VOLUME_UP.update(WINDOW)
