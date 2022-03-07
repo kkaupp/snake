@@ -1,6 +1,11 @@
-import pygame, os, sys, configparser
+import pygame, configparser
 from pygame.locals import *
-wall_list = pygame.sprite.Group()
+
+config = configparser.ConfigParser()
+config.read('config.ini')
+SCALE = int(config['config']['scale']) // 2 * 2
+WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
+WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
 
 class Wall(pygame.sprite.Sprite): 
     def __init__(self, x, y, width, height, color):
@@ -10,7 +15,6 @@ class Wall(pygame.sprite.Sprite):
             color - color of the wall
         """
         super().__init__()
- 
         self.image = pygame.Surface([width, height])
         self.image.fill(color)
  
@@ -18,6 +22,28 @@ class Wall(pygame.sprite.Sprite):
         self.rect.y = y
         self.rect.x = x
 
-class Level():
-    pass
-wall_list.add(Wall(0, 0, 20, 250, (255, 0, 0)))
+class Level(object):
+    wall_list = None
+
+    def __init__(self):
+        self.wall_list = pygame.sprite.Group()
+
+class Level1(Level):
+    def __init__(self):
+        super().__init__()
+        walls = [   [0, 0, SCALE, (WINDOW_HEIGHT/5)*2, (255, 0, 0)], # Wall top left corner -> down
+                    [0, 0, (WINDOW_WIDTH/5)*2, SCALE, (255, 0, 0)], # Wall top left corner -> right
+
+                    [WINDOW_WIDTH - SCALE, 0, SCALE, (WINDOW_HEIGHT/5)*2, (255, 255, 0)], # Wall top right corner -> down
+                    [WINDOW_WIDTH - (WINDOW_WIDTH/5)*2, 0, (WINDOW_WIDTH/5)*2, SCALE, (255, 255, 0)], # Wall top right corner -> left
+
+                    [0, WINDOW_HEIGHT - (WINDOW_HEIGHT/5)*2, SCALE, (WINDOW_HEIGHT/5)*2, (0, 255, 0)], # Wall Bottom left corner -> up
+                    [0, WINDOW_HEIGHT - SCALE, (WINDOW_WIDTH/5)*2, SCALE, (0, 255, 0)], # Wall Bottom left corner -> right
+
+                    [WINDOW_WIDTH - SCALE, WINDOW_HEIGHT - (WINDOW_HEIGHT/5)*2, SCALE, (WINDOW_HEIGHT/5)*2, (0, 0, 255)], # Wall Bottom right corner -> up
+                    [WINDOW_WIDTH - (WINDOW_WIDTH/5)*2, WINDOW_HEIGHT - SCALE, (WINDOW_WIDTH/5)*2, SCALE, (0, 0, 255)] # Wall Bottom right corner -> left
+                ]
+
+        for parameter in walls:
+            wall = Wall(parameter[0], parameter[1], parameter[2], parameter[3], parameter[4])
+            self.wall_list.add(wall)
