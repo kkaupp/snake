@@ -151,8 +151,9 @@ def pause():
                     sys.exit()
         pygame.display.update()
 
-## ToDo: Make it pretty, mit ein paar buttons und bessere aufteilung
-def game_over_screen(screen):
+## ToDo: Make it pretty, mit ein paar buttons und bessere aufteilung    
+
+def game_over(screen):
     config.read(os.path.join('config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
@@ -163,18 +164,7 @@ def game_over_screen(screen):
     rect = render.get_rect(center=(screen_width/2, screen_height/2))   
     screen.blit(render, rect) 
     pygame.display.flip()
-
-def game_over(screen):
-    game_over_screen(screen)
     pause()
-
-def quit():
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key:
-                    pygame.quit()
-                    sys.exit()
 
 def paint_hud(screen):
     font = pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE*2)
