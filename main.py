@@ -27,9 +27,8 @@ args = parser.parse_args()
 
 ## General Game Settings ##
 pygame.init()    # Initialize Game
-pygame.display.set_caption('Snake Game for Python class')
 
-## Music
+## Music ##
 pygame.mixer.music.load(os.path.join('sounds', args.music))
 pygame.mixer.music.play(-1,0.0)
 pygame.mixer.music.set_volume(VOLUME)
@@ -43,17 +42,18 @@ import snake, levels
 from button import Button
 
 BG = pygame.image.load("resources/pepe.png")
-BG = pygame.transform.scale(BG, (WINDOW_WIDTH, WINDOW_HEIGHT))
+BG = pygame.transform.scale(BG, (WINDOW_WIDTH*1.5, WINDOW_HEIGHT*1.5))
 
 def font():
     return pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * 3)
 
 def play():
     while True:
+        pygame.display.set_caption('Snake')
         snake.game(WINDOW, levels.Level1())
-        
+
         PLAY_MOUSE_POS = pygame.mouse.get_pos()
-        PLAY_BACK = Button(image=None, pos=(640, 460), text_input="BACK", font=font(), base_color="Black", hovering_color="Green")
+        PLAY_BACK = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), text_input="BACK", font=font(), base_color="Black", hovering_color="Green")
         PLAY_BACK.changeColor(PLAY_MOUSE_POS)
         PLAY_BACK.update(WINDOW)
 

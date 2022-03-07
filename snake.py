@@ -158,8 +158,7 @@ def game_over_screen(screen):
     pygame.mixer.music.set_volume(VOLUME * 0.7)
     font = pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * 3)
     render = font.render(f'Game Over! SCORE: {SCORE}', True, pygame.Color('black'))
-    rect = render.get_rect()    # xD
-    rect.midtop = (WINDOW_WIDTH/2-SCALE, WINDOW_HEIGHT/2-SCALE)
+    rect = render.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2))   
     screen.blit(render, rect) 
     pygame.display.flip()
 
