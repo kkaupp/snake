@@ -36,13 +36,27 @@ pygame.mixer.music.set_volume(VOLUME)
 ## Size ##
 WINDOW_WIDTH = (args.width) // SCALE * SCALE
 WINDOW_HEIGHT = (args.height) // SCALE * SCALE
-WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
 
 import snake, levels
 from button import Button
 
 BG = pygame.image.load("resources/pepe.png")
 BG = pygame.transform.scale(BG, (WINDOW_WIDTH*1.5, WINDOW_HEIGHT*1.5))
+
+# fullscreen handling
+# monitor_size = [pygame.display.Info().current_w, pygame.display.Info().current_h]
+# for event in pygame.event.get():
+#     if event.type == pygame.VIDEORESIZE:
+#         if not fullscreen:
+#             print('test')
+#             WINDOW = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+#         if event.type == pygame.K_f:
+#             fullscreen = not fullscreen
+#         if fullscreen:
+#             WINDOW = pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
+#         else:
+#             WINDOW = pygame.display.set_mode((WINDOW.get_width(), WINDOW.get_height()), pygame.RESIZABLE)
 
 def font():
     return pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * 3)
@@ -75,6 +89,9 @@ def options():
         OPTIONS_TEXT = font().render("Options", True, "White")
         OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/4))
         WINDOW.blit(OPTIONS_TEXT, OPTIONS_RECT)
+
+        OPTIONS_VOLUME = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(), base_color="White", hovering_color="Green")
+
         OPTIONS_BACK = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(), base_color="White", hovering_color="Green")
         OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_BACK.update(WINDOW)
