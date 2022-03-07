@@ -10,8 +10,6 @@ config = configparser.ConfigParser()
 config.read(os.path.join('config.ini'))
 SCALE = int(config['config']['scale']) // 2 * 2     # To ensure that it is a multiple of 2
 FPS = int(config['config']['fps'])
-global SCORE
-global SPEED
 SCORE = int(config['config']['score'])
 SPEED = float(config['config']['speed'])
 VOLUME = float(config['config']['volume'])
