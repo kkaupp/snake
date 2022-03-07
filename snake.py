@@ -1,4 +1,4 @@
-import pygame, random, time, os, sys, configparser, argparse
+import pygame, random, time, os, configparser, music
 from pygame.locals import *
 from enum import Enum
 ## ToDo: Komentare :(
@@ -11,6 +11,7 @@ config.read(os.path.join('config.ini'))
 SCALE = int(config['config']['scale']) // 2 * 2     # To ensure that it is a multiple of 2
 SCORE = int(config['config']['score'])
 SPEED = float(config['config']['speed'])
+COLOR = 'white'
 
 ## Constants ##
 REFRESH_CONTROLLER = pygame.time.Clock()
@@ -32,12 +33,12 @@ class Food(Moveble_object):
         self.generate_new_food(screen_width, screen_height)
 
     def generate_new_food(self, screen_width, screen_height):
-        foodimage = str(random.randrange(0, 3, 1))
+        foodimage = str(random.randrange(0, 7, 1))
         self.image = pygame.image.load(os.path.join('resources', f'{foodimage}food.png')).convert_alpha()
-        self.position = pygame.Rect(random.randrange(SCALE, screen_width - SCALE, SCALE), random.randrange(SCALE, screen_height - SCALE, SCALE), SCALE, SCALE)
+        self.rect = pygame.Rect(random.randrange(SCALE, screen_width - SCALE, SCALE), random.randrange(SCALE, screen_height - SCALE, SCALE), SCALE, SCALE)
         
     def draw(self, screen):
-        screen.blit(self.image, self.position)
+        screen.blit(self.image, self.rect)
 
 class Character(Moveble_object):
     body = [[SCALE, SCALE*2]]
@@ -79,11 +80,9 @@ class Character(Moveble_object):
 
     def get_food(self, food, screen_width, screen_height):
         global SCORE
-        if self.position[0] - SCALE/2 == food.position[0] and self.position[1] - SCALE/2 == food.position[1]:
-            SCORE += 1
-            food.generate_new_food(screen_width, screen_height)
-        else:
-            self.body.pop()    # enlarge snake
+        SCORE += 1
+        pygame.mixer.Sound(os.path.join("sounds" ,config['config']['eat'])).play()
+        food.generate_new_food(screen_width, screen_height)
 
 def handle_keys(direction):
     new_direction = direction   # Keep direction if no event
@@ -117,7 +116,7 @@ def repaint(screen, snake, food, level):
     config.read(os.path.join('config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
-    backgroundimage = config['config']['background']
+    backgroundimage = level.background
     background = pygame.transform.scale(pygame.image.load(os.path.join('resources', backgroundimage)).convert(), (screen_width, screen_height))
 
     screen.blit(background, (0, 0))
@@ -126,6 +125,15 @@ def repaint(screen, snake, food, level):
     # Collision Check
     if pygame.sprite.spritecollideany(snake, level.wall_list):
         game_over(screen)
+
+    if pygame.sprite.spritecollideany(food, level.wall_list):
+        food.generate_new_food(screen_width, screen_height)
+
+    foods = [food]
+    if pygame.sprite.spritecollide(snake, foods, False):
+        snake.get_food(food, screen_width, screen_height)
+    else:
+        snake.body.pop()
 
     for blob in snake.body[1:]:
         if (snake.position[0] == blob[0] and snake.position[1] == blob[1]):
@@ -147,8 +155,7 @@ def pause():
                     paused = False
                     pygame.mixer.music.set_volume(volume)
                 if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                    return
         pygame.display.update()
 
 ## ToDo: Make it pretty, mit ein paar buttons und bessere aufteilung    
@@ -160,28 +167,32 @@ def game_over(screen):
     volume = float(config['config']['volume'])
     pygame.mixer.music.set_volume(volume * 0.7)
     font = pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * 3)
-    render = font.render(f'Game Over! SCORE: {SCORE}', True, pygame.Color('black'))
+    render = font.render(f'Game Over! SCORE: {SCORE}', True, pygame.Color(COLOR))
     rect = render.get_rect(center=(screen_width/2, screen_height/2))   
     screen.blit(render, rect) 
     pygame.display.flip()
+    pygame.mixer.Sound(os.path.join("sounds" ,config['config']['game_over'])).play()
     pause()
 
 def paint_hud(screen):
     font = pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE*2)
-    render = font.render(f'SCORE: {SCORE}', True, pygame.Color('black'))
+    render = font.render(f'SCORE: {SCORE}', True, pygame.Color(COLOR))
     rect = render.get_rect()
     screen.blit(render, rect) 
     pygame.display.flip()
 
-
 def game(screen, level):    # Game Loop
+    global COLOR
+    COLOR = level.textcolor
     config.read(os.path.join('config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
     snake = Character(screen_width, screen_height)
     food = Food(screen_width, screen_height)
     direction = Direction.RIGHT    # Initial direction
-    
+    pygame.mixer.music.load(os.path.join('sounds', level.music))
+    pygame.mixer.music.play(-1,0.0)
+    music.fade_music(float(config['config']['volume']), "in")
     game_running = True
 
     fps = int(config['config']['fps'])
@@ -189,7 +200,6 @@ def game(screen, level):    # Game Loop
     while game_running:
         direction = handle_keys(direction)    # User input determines direction
         snake.move(direction, screen_width, screen_height)       
-        snake.get_food(food, screen_width, screen_height)
         repaint(screen, snake, food, level)
         paint_hud(screen)
         pygame.display.update()     # Update Display

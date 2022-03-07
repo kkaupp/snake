@@ -1,2 +1,4 @@
 # snake
 snake for class python project
+
+DON'T BE AFFRAID WHEN YOU START THE GAME. IT MIGHT LAGG INBETWEEN THE START
