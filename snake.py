@@ -11,6 +11,7 @@ config.read(os.path.join('config.ini'))
 SCALE = int(config['config']['scale']) // 2 * 2     # To ensure that it is a multiple of 2
 SCORE = int(config['config']['score'])
 SPEED = float(config['config']['speed'])
+COLOR = 'white'
 
 ## Constants ##
 REFRESH_CONTROLLER = pygame.time.Clock()
@@ -160,7 +161,7 @@ def game_over(screen):
     volume = float(config['config']['volume'])
     pygame.mixer.music.set_volume(volume * 0.7)
     font = pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * 3)
-    render = font.render(f'Game Over! SCORE: {SCORE}', True, pygame.Color('black'))
+    render = font.render(f'Game Over! SCORE: {SCORE}', True, pygame.Color(COLOR))
     rect = render.get_rect(center=(screen_width/2, screen_height/2))   
     screen.blit(render, rect) 
     pygame.display.flip()
@@ -169,12 +170,14 @@ def game_over(screen):
 
 def paint_hud(screen):
     font = pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE*2)
-    render = font.render(f'SCORE: {SCORE}', True, pygame.Color('black'))
+    render = font.render(f'SCORE: {SCORE}', True, pygame.Color(COLOR))
     rect = render.get_rect()
     screen.blit(render, rect) 
     pygame.display.flip()
 
 def game(screen, level):    # Game Loop
+    global COLOR
+    COLOR = level.textcolor
     config.read(os.path.join('config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE

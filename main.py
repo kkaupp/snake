@@ -35,11 +35,8 @@ WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 import snake, levels, music
 
-
 def font(size):
     return pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * size)
-
-
 
 def play():
     screen_width = int(config['config']['width']) // SCALE * SCALE
@@ -48,7 +45,7 @@ def play():
     music.fade_music(VOLUME, "out")
     pygame.mixer.music.pause()
 
-    snake.game(WINDOW, levels.Level1(screen_width, screen_height))
+    snake.game(WINDOW, levels.Level3(screen_width, screen_height))
 
     pygame.mixer.music.play()
     music.fade_music(VOLUME, "in")
