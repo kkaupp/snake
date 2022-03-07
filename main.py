@@ -1,4 +1,4 @@
-import pygame, os, configparser, argparse
+import pygame, os, configparser, argparse, sys
 
 ## Read config.ini ##
 config = configparser.ConfigParser()
@@ -43,17 +43,17 @@ def font(size):
 
 def play():
     while True:
-        WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
-        WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
+        screen_width = int(config['config']['width']) // SCALE * SCALE
+        screen_height = int(config['config']['height']) // SCALE * SCALE
         global WINDOW 
-        WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        WINDOW = pygame.display.set_mode((screen_width, screen_height))
         print(WINDOW)
         
         pygame.display.set_caption('Snake')
-        snake.game(WINDOW, levels.Level1())
+        snake.game(WINDOW, levels.Level1(screen_width, screen_height))
 
         PLAY_MOUSE_POS = pygame.mouse.get_pos()
-        PLAY_BACK = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), text_input="BACK", font=font(2), base_color="Black", hovering_color="Green")
+        PLAY_BACK = Button(image=None, pos=(screen_width/2, screen_height/2), text_input="BACK", font=font(2), base_color="Black", hovering_color="Green")
         PLAY_BACK.changeColor(PLAY_MOUSE_POS)
         PLAY_BACK.update(WINDOW)
 

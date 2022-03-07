@@ -4,8 +4,6 @@ from pygame.locals import *
 config = configparser.ConfigParser()
 config.read('config.ini')
 SCALE = int(config['config']['scale']) // 2 * 2
-WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
-WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
 
 class Wall(pygame.sprite.Sprite): 
     def __init__(self, x, y, width, height, color):
@@ -29,19 +27,19 @@ class Level(object):
         self.wall_list = pygame.sprite.Group()
 
 class Level1(Level):
-    def __init__(self):
+    def __init__(self, width, height):
         super().__init__()
-        walls = [   [0, 0, SCALE, (WINDOW_HEIGHT/5)*2, (255, 0, 0)], # Wall top left corner -> down
-                    [0, 0, (WINDOW_WIDTH/5)*2, SCALE, (255, 0, 0)], # Wall top left corner -> right
+        walls = [   [0, 0, SCALE, (height/5)*2, (255, 0, 0)], # Wall top left corner -> down
+                    [0, 0, (width/5)*2, SCALE, (255, 0, 0)], # Wall top left corner -> right
 
-                    [WINDOW_WIDTH - SCALE, 0, SCALE, (WINDOW_HEIGHT/5)*2, (255, 255, 0)], # Wall top right corner -> down
-                    [WINDOW_WIDTH - (WINDOW_WIDTH/5)*2, 0, (WINDOW_WIDTH/5)*2, SCALE, (255, 255, 0)], # Wall top right corner -> left
+                    [width - SCALE, 0, SCALE, (height/5)*2, (255, 255, 0)], # Wall top right corner -> down
+                    [width - (width/5)*2, 0, (width/5)*2, SCALE, (255, 255, 0)], # Wall top right corner -> left
 
-                    [0, WINDOW_HEIGHT - (WINDOW_HEIGHT/5)*2, SCALE, (WINDOW_HEIGHT/5)*2, (0, 255, 0)], # Wall Bottom left corner -> up
-                    [0, WINDOW_HEIGHT - SCALE, (WINDOW_WIDTH/5)*2, SCALE, (0, 255, 0)], # Wall Bottom left corner -> right
+                    [0, height - (height/5)*2, SCALE, (height/5)*2, (0, 255, 0)], # Wall Bottom left corner -> up
+                    [0, height - SCALE, (width/5)*2, SCALE, (0, 255, 0)], # Wall Bottom left corner -> right
 
-                    [WINDOW_WIDTH - SCALE, WINDOW_HEIGHT - (WINDOW_HEIGHT/5)*2, SCALE, (WINDOW_HEIGHT/5)*2, (0, 0, 255)], # Wall Bottom right corner -> up
-                    [WINDOW_WIDTH - (WINDOW_WIDTH/5)*2, WINDOW_HEIGHT - SCALE, (WINDOW_WIDTH/5)*2, SCALE, (0, 0, 255)] # Wall Bottom right corner -> left
+                    [width - SCALE, height - (height/5)*2, SCALE, (height/5)*2, (0, 0, 255)], # Wall Bottom right corner -> up
+                    [width - (width/5)*2, height - SCALE, (width/5)*2, SCALE, (0, 0, 255)] # Wall Bottom right corner -> left
                 ]
 
         for parameter in walls:
