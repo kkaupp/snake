@@ -38,14 +38,15 @@ WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 import snake, levels
 from button import Button
 
-BG = pygame.image.load("resources/pepe.png")
-BG = pygame.transform.scale(BG, (WINDOW_WIDTH*1.5, WINDOW_HEIGHT*1.5))
-
 def font(size):
     return pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * size)
 
 def play():
     while True:
+        WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
+        WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
+        WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        
         pygame.display.set_caption('Snake')
         snake.game(WINDOW, levels.Level1())
 
@@ -64,22 +65,99 @@ def play():
 
         pygame.display.update()
     
+def resolution_update(width, height):
+    with open('config.ini', 'w') as configfile:
+        config.set('config', 'width', f'{width}')
+        config.set('config', 'height', f'{height}')
+        config.write(configfile)
+
+def resolution():
+    while True:
+        WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
+        WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
+        WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+
+        pygame.display.set_caption('Resolution')
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
+        WINDOW.fill("black")
+        RESOLUTION_TEXT = font(3).render("Resolution", True, "White")
+        RESOLUTION_RECT = RESOLUTION_TEXT.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
+        WINDOW.blit(RESOLUTION_TEXT, RESOLUTION_RECT)
+
+        RESOLUTION_ULTRAHD = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="3840x2160", font=font(2), base_color="White", hovering_color="Green")
+        RESOLUTION_ULTRAHD.changeColor(OPTIONS_MOUSE_POS)
+        RESOLUTION_ULTRAHD.update(WINDOW)
+
+        RESOLUTION_WQHD = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="2560x1440", font=font(2), base_color="White", hovering_color="Green")
+        RESOLUTION_WQHD.changeColor(OPTIONS_MOUSE_POS)
+        RESOLUTION_WQHD.update(WINDOW)
+        
+        RESOLUTION_FULLHD = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="1920x1080", font=font(2), base_color="White", hovering_color="Green")
+        RESOLUTION_FULLHD.changeColor(OPTIONS_MOUSE_POS)
+        RESOLUTION_FULLHD.update(WINDOW)
+        
+        RESOLUTION_HD = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="1280x720", font=font(2), base_color="White", hovering_color="Green")
+        RESOLUTION_HD.changeColor(OPTIONS_MOUSE_POS)
+        RESOLUTION_HD.update(WINDOW)
+
+        RESOLUTION_SD = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.2), text_input="720x576", font=font(2), base_color="White", hovering_color="Green")
+        RESOLUTION_SD.changeColor(OPTIONS_MOUSE_POS)
+        RESOLUTION_SD.update(WINDOW)
+
+        RESOLUTION_BACK = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(2), base_color="White", hovering_color="Green")
+        RESOLUTION_BACK.changeColor(OPTIONS_MOUSE_POS)
+        RESOLUTION_BACK.update(WINDOW)
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if RESOLUTION_ULTRAHD.checkForInput(OPTIONS_MOUSE_POS):
+                    width, height = 3840, 2160
+                    resolution_update(width, height)
+                if RESOLUTION_WQHD.checkForInput(OPTIONS_MOUSE_POS):
+                    width, height = 2560, 1440
+                    resolution_update(width, height)
+                if RESOLUTION_FULLHD.checkForInput(OPTIONS_MOUSE_POS):
+                    width, height = 1920, 1080
+                    resolution_update(width, height)
+                if RESOLUTION_HD.checkForInput(OPTIONS_MOUSE_POS):
+                    width, height = 1280, 720
+                    resolution_update(width, height)
+                if RESOLUTION_SD.checkForInput(OPTIONS_MOUSE_POS):
+                    width, height = 720, 576
+                    resolution_update(width, height)
+                if RESOLUTION_BACK.checkForInput(OPTIONS_MOUSE_POS):
+                    options()
+
+        pygame.display.update()
+
 def options():
     while True:
+        WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
+        WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
+        WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+
         pygame.display.set_caption('Options')
         OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
         WINDOW.fill("black")
         OPTIONS_TEXT = font(3).render("Options", True, "White")
-        OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/5))
+        OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
         WINDOW.blit(OPTIONS_TEXT, OPTIONS_RECT)
 
-        OPTIONS_VOLUME_DOWN = Button(image=None, pos=(WINDOW_WIDTH/2 - SCALE*2, WINDOW_HEIGHT/3), text_input="-", font=font(2), base_color="White", hovering_color="Green")
+        OPTIONS_VOLUME = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Volume", font=font(2), base_color="White", hovering_color="White")
+        OPTIONS_VOLUME.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_VOLUME.update(WINDOW)
+
+        OPTIONS_VOLUME_DOWN = Button(image=None, pos=(WINDOW_WIDTH/2 - SCALE*4, WINDOW_HEIGHT/3), text_input="-", font=font(2), base_color="White", hovering_color="Green")
         OPTIONS_VOLUME_DOWN.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_VOLUME_DOWN.update(WINDOW)
 
-        OPTIONS_VOLUME_UP = Button(image=None, pos=(WINDOW_WIDTH/2 + SCALE*2, WINDOW_HEIGHT/3), text_input="+", font=font(2), base_color="White", hovering_color="Green")
+        OPTIONS_VOLUME_UP = Button(image=None, pos=(WINDOW_WIDTH/2 + SCALE*4, WINDOW_HEIGHT/3), text_input="+", font=font(2), base_color="White", hovering_color="Green")
         OPTIONS_VOLUME_UP.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_VOLUME_UP.update(WINDOW)
+
+        OPTIONS_RESOLUTION = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Resolution", font=font(2), base_color="White", hovering_color="Green")
+        OPTIONS_RESOLUTION.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_RESOLUTION.update(WINDOW)
 
         OPTIONS_BACK = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(2), base_color="White", hovering_color="Green")
         OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
@@ -99,7 +177,7 @@ def options():
                             volume -= 0.1
                         else: 
                             pass
-                        config.set('config', 'volume', f'{volume:.2f}')
+                        config.set('config', 'volume', f'{volume:.1f}')
                         config.write(configfile)
                     VOLUME = float(config['config']['volume'])
                     pygame.mixer.music.set_volume(VOLUME)
@@ -110,15 +188,22 @@ def options():
                             volume += 0.1
                         else: 
                             pass
-                        config.set('config', 'volume', f'{volume:.2f}')
+                        config.set('config', 'volume', f'{volume:.1f}')
                         config.write(configfile)
                     VOLUME = float(config['config']['volume'])
                     pygame.mixer.music.set_volume(VOLUME)
-
+                if OPTIONS_RESOLUTION.checkForInput(OPTIONS_MOUSE_POS):
+                    resolution()
         pygame.display.update()
 
 def main_menu():
     while True:
+        WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
+        WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
+        WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        BG = pygame.image.load("resources/pepe.png")
+        BG = pygame.transform.scale(BG, (WINDOW_WIDTH*1.5, WINDOW_HEIGHT*1.5))
+
         pygame.display.set_caption('Main Menu')
         WINDOW.blit(BG, (0, 0))
         MENU_MOUSE_POS = pygame.mouse.get_pos()
