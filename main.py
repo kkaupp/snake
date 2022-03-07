@@ -1,4 +1,3 @@
-from tkinter import W
 import pygame, os, configparser, argparse, sys
 from button import Button
 
@@ -14,7 +13,7 @@ WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
 parser = argparse.ArgumentParser(description='Snake Game for Python class')
 parser.add_argument('-x', '--width', metavar='', type=int, help='Set specific screen width, default value: ' + str(WINDOW_WIDTH), default=WINDOW_WIDTH)        # uses default of config
 parser.add_argument('-y', '--height', metavar='', type=int, help='Set specific screen height, default value: ' + str(WINDOW_HEIGHT), default=WINDOW_HEIGHT)    # uses default of config
-parser.add_argument('-b', '--background', metavar='', type=str, help='Set own mainmenu background image', default='desert.jpg')    
+parser.add_argument('-b', '--background', metavar='', type=str, help='Set own mainmenu background image', default='pepe.png')    
 parser.add_argument('-m', '--music', metavar='', type=str, help='Set own mainmenu music', default='8_Bit_Fantasy_Adventure_Music.mp3')   
 parser.add_argument('-c', '--color', metavar='', type=str, help='Set snake color, supports basic colors', default='white')    
 args = parser.parse_args()
@@ -32,7 +31,9 @@ WINDOW_WIDTH = (args.width) // SCALE * SCALE      # overrides config setting wit
 WINDOW_HEIGHT = (args.height) // SCALE * SCALE    # overrides config setting with argparse
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
-import snake, levels
+
+import snake, levels, music
+
 
 def font(size):
     return pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * size)
@@ -102,11 +103,16 @@ def choose_level(screen_width, screen_height):
 def play():
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
+
     username = get_username()
     level = choose_level(screen_width, screen_height)
     if level != None:
+        music.fade_music(VOLUME, "out")
+        pygame.mixer.music.pause()
         snake.game(WINDOW, level)
 
+    pygame.mixer.music.play()
+    music.fade_music(VOLUME, "in")
         # PLAY_MOUSE_POS = pygame.mouse.get_pos()
         # PLAY_BACK = Button(image=None, pos=(screen_width/2, screen_height/2), text_input="BACK", font=font(2), base_color="Black", hovering_color="Green")
         # PLAY_BACK.changeColor(PLAY_MOUSE_POS)
@@ -231,6 +237,7 @@ def options():
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+
                 if btn_options_volume_down.checkForInput(mouse_pos):
                     if volume > 0:
                         volume -= 0.1
@@ -272,7 +279,7 @@ def options():
 
    
 if __name__ == '__main__':
-    backgroundimage = pygame.image.load(os.path.join("resources", "pepe.png"))
+    backgroundimage = pygame.image.load(os.path.join("resources", args.background))
     pygame.display.set_caption('Snake by LFH')
     txt_menu = font(3).render("MAIN MENU", True, "#b68f40")
     start_width = WINDOW_WIDTH
