@@ -22,6 +22,8 @@ class Wall(pygame.sprite.Sprite):
 
 class Level(object):
     wall_list = None
+    background = 'desert.jpg'
+    music = 'Tequila.mp3'
 
     def __init__(self):
         self.wall_list = pygame.sprite.Group()

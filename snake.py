@@ -1,4 +1,4 @@
-import pygame, random, time, os, sys, configparser, argparse
+import pygame, random, time, os, configparser, music
 from pygame.locals import *
 from enum import Enum
 ## ToDo: Komentare :(
@@ -32,7 +32,7 @@ class Food(Moveble_object):
         self.generate_new_food(screen_width, screen_height)
 
     def generate_new_food(self, screen_width, screen_height):
-        foodimage = str(random.randrange(0, 3, 1))
+        foodimage = str(random.randrange(0, 7, 1))
         self.image = pygame.image.load(os.path.join('resources', f'{foodimage}food.png')).convert_alpha()
         self.position = pygame.Rect(random.randrange(SCALE, screen_width - SCALE, SCALE), random.randrange(SCALE, screen_height - SCALE, SCALE), SCALE, SCALE)
         
@@ -81,6 +81,7 @@ class Character(Moveble_object):
         global SCORE
         if self.position[0] - SCALE/2 == food.position[0] and self.position[1] - SCALE/2 == food.position[1]:
             SCORE += 1
+            pygame.mixer.Sound(os.path.join("sounds" ,config['config']['eat'])).play()
             food.generate_new_food(screen_width, screen_height)
         else:
             self.body.pop()    # enlarge snake
@@ -117,7 +118,7 @@ def repaint(screen, snake, food, level):
     config.read(os.path.join('config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
-    backgroundimage = config['config']['background']
+    backgroundimage = level.background
     background = pygame.transform.scale(pygame.image.load(os.path.join('resources', backgroundimage)).convert(), (screen_width, screen_height))
 
     screen.blit(background, (0, 0))
@@ -163,6 +164,7 @@ def game_over(screen):
     rect = render.get_rect(center=(screen_width/2, screen_height/2))   
     screen.blit(render, rect) 
     pygame.display.flip()
+    pygame.mixer.Sound(os.path.join("sounds" ,config['config']['game_over'])).play()
     pause()
 
 def paint_hud(screen):
@@ -172,7 +174,6 @@ def paint_hud(screen):
     screen.blit(render, rect) 
     pygame.display.flip()
 
-
 def game(screen, level):    # Game Loop
     config.read(os.path.join('config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
@@ -180,7 +181,9 @@ def game(screen, level):    # Game Loop
     snake = Character(screen_width, screen_height)
     food = Food(screen_width, screen_height)
     direction = Direction.RIGHT    # Initial direction
-    
+    pygame.mixer.music.load(os.path.join('sounds', level.music))
+    pygame.mixer.music.play(-1,0.0)
+    music.fade_music(float(config['config']['volume']), "in")
     game_running = True
 
     fps = int(config['config']['fps'])
