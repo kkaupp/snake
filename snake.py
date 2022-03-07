@@ -12,6 +12,7 @@ SCALE = int(config['config']['scale']) // 2 * 2     # To ensure that it is a mul
 SCORE = int(config['config']['score'])
 SPEED = float(config['config']['speed'])
 COLOR = 'white'
+gameover = False
 
 ## Constants ##
 REFRESH_CONTROLLER = pygame.time.Clock()
@@ -146,16 +147,15 @@ def repaint(screen, snake, food, level):
 def pause():
     config.read(os.path.join('config.ini'))
     volume = float(config['config']['volume'])
-    paused = True
-    while paused:
+
+    while True:
         pygame.mixer.music.set_volume(volume * 0.7)
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    paused = False
+                if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
                     pygame.mixer.music.set_volume(volume)
-                if event.key == pygame.K_ESCAPE:
                     return
+
         pygame.display.update()
 
 ## ToDo: Make it pretty, mit ein paar buttons und bessere aufteilung    
@@ -173,6 +173,8 @@ def game_over(screen):
     pygame.display.flip()
     pygame.mixer.Sound(os.path.join("sounds" ,config['config']['game_over'])).play()
     pause()
+    global gameover
+    gameover = True
 
 def paint_hud(screen):
     font = pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE*2)
@@ -182,7 +184,9 @@ def paint_hud(screen):
     pygame.display.flip()
 
 def game(screen, level):    # Game Loop
-    global COLOR
+    global COLOR, gameover, SCORE
+    SCORE = 0
+    gameover = False
     COLOR = level.textcolor
     config.read(os.path.join('config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
@@ -193,11 +197,10 @@ def game(screen, level):    # Game Loop
     pygame.mixer.music.load(os.path.join('sounds', level.music))
     pygame.mixer.music.play(-1,0.0)
     music.fade_music(float(config['config']['volume']), "in")
-    game_running = True
 
     fps = int(config['config']['fps'])
 
-    while game_running:
+    while True:
         direction = handle_keys(direction)    # User input determines direction
         snake.move(direction, screen_width, screen_height)       
         repaint(screen, snake, food, level)
@@ -205,3 +208,5 @@ def game(screen, level):    # Game Loop
         pygame.display.update()     # Update Display
         REFRESH_CONTROLLER.tick(fps)
         time.sleep(SPEED)
+        if gameover:
+            return SCORE

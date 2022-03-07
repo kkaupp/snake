@@ -84,7 +84,7 @@ def choose_level(screen_width, screen_height):
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if btn_choose_level_0.checkForInput(mouse_pos):
-                    return levels.Level(screen_width, screen_height)
+                    return levels.Level()
                 if btn_choose_level_1.checkForInput(mouse_pos):
                     return levels.Level1(screen_width, screen_height)
                 if btn_choose_level_2.checkForInput(mouse_pos):
@@ -109,8 +109,8 @@ def play():
     if level != None:
         music.fade_music(VOLUME, "out")
         pygame.mixer.music.pause()
-        snake.game(WINDOW, level)
-
+        score = snake.game(WINDOW, level)
+    print(username, score)
     pygame.mixer.music.play()
     music.fade_music(VOLUME, "in")
         # PLAY_MOUSE_POS = pygame.mouse.get_pos()
