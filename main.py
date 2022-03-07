@@ -45,7 +45,9 @@ def play():
     while True:
         WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
         WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
+        global WINDOW 
         WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        print(WINDOW)
         
         pygame.display.set_caption('Snake')
         snake.game(WINDOW, levels.Level1())

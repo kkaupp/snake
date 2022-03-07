@@ -122,9 +122,6 @@ def handle_keys(direction):
     return new_direction
 
 def repaint(screen, snake, food, level):
-    WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
-    WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
-    WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     screen.blit(BACKGROUND, (0, 0))
     level.wall_list.draw(screen)
     food.draw(screen)
@@ -187,6 +184,17 @@ def game(screen, level):    # Game Loop
     snake = Character()
     food = Food()
     direction = Direction.RIGHT    # Initial direction
+
+    global WINDOW_WIDTH
+    global WINDOW_HEIGHT
+
+    WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
+    WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
+
+    print(screen)
+    # print(WINDOW_WIDTH, WINDOW_HEIGHT)
+    print(screen)
+
     game_running = True
 
     while game_running:
