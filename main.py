@@ -39,8 +39,9 @@ def font(size):
 
 def get_username():
     user_input = ''
-    WINDOW.fill("Black")
-
+    txt_username = font(3).render('Enter Username and press Enter:', True, "White")
+    rect_txt_username = txt_username.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
+    
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -49,21 +50,62 @@ def get_username():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
                     user_input = user_input[:-1]    # delete last character
+                elif event.key == pygame.K_RETURN:
+                    return user_input
                 else:
                     user_input += event.unicode
-
-        txt_username = font(3).render("Enter Username:", True, "White")
-        rect_username = txt_username.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
-
-        WINDOW.blit(txt_username, rect_username)
+                
+        WINDOW.fill("Black")
+        edt_username = font(3).render(f'{user_input}', True, "White")
+        rect_edt_username = edt_username.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2))
+        WINDOW.blit(txt_username, rect_txt_username)
+        WINDOW.blit(edt_username, rect_edt_username)
         pygame.display.update()
         
+def choose_level(screen_width, screen_height):
+    txt_choose_level = font(3).render("Select Level:", True, "White")
+    while True:
+        btn_choose_level_0 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Fun Mode", font=font(2), base_color="White", hovering_color="Green")
+        btn_choose_level_1 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Level 1", font=font(2), base_color="White", hovering_color="Green")
+        btn_choose_level_2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(2), base_color="White", hovering_color="Green")
+        btn_choose_level_3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(2), base_color="White", hovering_color="Green")
+        btn_choose_level_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(2), base_color="White", hovering_color="Green")
+        rect_choose_level = txt_choose_level.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
+
+        WINDOW.fill("Black")
+        WINDOW.blit(txt_choose_level, rect_choose_level)
+        mouse_pos = pygame.mouse.get_pos()
+
+        for button in [btn_choose_level_0, btn_choose_level_1, btn_choose_level_2, btn_choose_level_3, btn_choose_level_back]:
+            button.changeColor(mouse_pos)
+            button.update(WINDOW)
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if btn_choose_level_0.checkForInput(mouse_pos):
+                    return levels.Level(screen_width, screen_height)
+                if btn_choose_level_1.checkForInput(mouse_pos):
+                    return levels.Level1(screen_width, screen_height)
+                if btn_choose_level_2.checkForInput(mouse_pos):
+                    return levels.Level2(screen_width, screen_height) 
+                if btn_choose_level_3.checkForInput(mouse_pos):
+                    return levels.Level3(screen_width, screen_height)
+                if btn_choose_level_back.checkForInput(mouse_pos):
+                    return None
+
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        pygame.display.update()
 
 def play():
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
-    get_username()
-    snake.game(WINDOW, levels.Level1(screen_width, screen_height))
+    username = get_username()
+    level = choose_level(screen_width, screen_height)
+    if level != None:
+        snake.game(WINDOW, level)
 
         # PLAY_MOUSE_POS = pygame.mouse.get_pos()
         # PLAY_BACK = Button(image=None, pos=(screen_width/2, screen_height/2), text_input="BACK", font=font(2), base_color="Black", hovering_color="Green")
@@ -174,14 +216,14 @@ def options():
             btn_options_volume_up = Button(image=None, pos=(WINDOW_WIDTH/2 + SCALE*4, WINDOW_HEIGHT/3), text_input="+", font=font(2), base_color="White", hovering_color="Green")
             btn_options_resolution = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Resolution", font=font(2), base_color="White", hovering_color="Green")
             btn_options_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(2), base_color="White", hovering_color="Green")
-            options_rect = txt_options.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
+            rect_options = txt_options.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
             start_width = WINDOW_WIDTH
             start_height = WINDOW_HEIGHT
             init = False
 
-        mouse_pos = pygame.mouse.get_pos()
         WINDOW.fill("black")
-        WINDOW.blit(txt_options, options_rect)
+        WINDOW.blit(txt_options, rect_options)
+        mouse_pos = pygame.mouse.get_pos()
 
         for button in [btn_options_volume, btn_options_volume_down, btn_options_volume_up, btn_options_resolution, btn_options_back]:
             button.changeColor(mouse_pos)
@@ -189,12 +231,6 @@ def options():
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if btn_options_back.checkForInput(mouse_pos):
-                    with open('config.ini', 'w') as configfile:
-                        config.set('config', 'volume', f'{volume:.1f}')
-                        config.write(configfile)
-                    return
-
                 if btn_options_volume_down.checkForInput(mouse_pos):
                     if volume > 0:
                         volume -= 0.1
@@ -207,6 +243,12 @@ def options():
 
                 if btn_options_resolution.checkForInput(mouse_pos):
                     resolution()
+                
+                if btn_options_back.checkForInput(mouse_pos):
+                    with open('config.ini', 'w') as configfile:
+                        config.set('config', 'volume', f'{volume:.1f}')
+                        config.write(configfile)
+                    return
 
             if event.type == pygame.QUIT:
                 pygame.quit()
