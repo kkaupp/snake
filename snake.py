@@ -147,8 +147,7 @@ def pause():
                     paused = False
                     pygame.mixer.music.set_volume(volume)
                 if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                    return
         pygame.display.update()
 
 ## ToDo: Make it pretty, mit ein paar buttons und bessere aufteilung    
