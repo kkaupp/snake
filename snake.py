@@ -35,10 +35,10 @@ class Food(Moveble_object):
     def generate_new_food(self, screen_width, screen_height):
         foodimage = str(random.randrange(0, 7, 1))
         self.image = pygame.image.load(os.path.join('resources', f'{foodimage}food.png')).convert_alpha()
-        self.position = pygame.Rect(random.randrange(SCALE, screen_width - SCALE, SCALE), random.randrange(SCALE, screen_height - SCALE, SCALE), SCALE, SCALE)
+        self.rect = pygame.Rect(random.randrange(SCALE, screen_width - SCALE, SCALE), random.randrange(SCALE, screen_height - SCALE, SCALE), SCALE, SCALE)
         
     def draw(self, screen):
-        screen.blit(self.image, self.position)
+        screen.blit(self.image, self.rect)
 
 class Character(Moveble_object):
     body = [[SCALE, SCALE*2]]
@@ -80,12 +80,9 @@ class Character(Moveble_object):
 
     def get_food(self, food, screen_width, screen_height):
         global SCORE
-        if self.position[0] - SCALE/2 == food.position[0] and self.position[1] - SCALE/2 == food.position[1]:
-            SCORE += 1
-            pygame.mixer.Sound(os.path.join("sounds" ,config['config']['eat'])).play()
-            food.generate_new_food(screen_width, screen_height)
-        else:
-            self.body.pop()    # enlarge snake
+        SCORE += 1
+        pygame.mixer.Sound(os.path.join("sounds" ,config['config']['eat'])).play()
+        food.generate_new_food(screen_width, screen_height)
 
 def handle_keys(direction):
     new_direction = direction   # Keep direction if no event
@@ -128,6 +125,15 @@ def repaint(screen, snake, food, level):
     # Collision Check
     if pygame.sprite.spritecollideany(snake, level.wall_list):
         game_over(screen)
+
+    if pygame.sprite.spritecollideany(food, level.wall_list):
+        food.generate_new_food(screen_width, screen_height)
+
+    foods = [food]
+    if pygame.sprite.spritecollide(snake, foods, False):
+        snake.get_food(food, screen_width, screen_height)
+    else:
+        snake.body.pop()
 
     for blob in snake.body[1:]:
         if (snake.position[0] == blob[0] and snake.position[1] == blob[1]):
@@ -194,7 +200,6 @@ def game(screen, level):    # Game Loop
     while game_running:
         direction = handle_keys(direction)    # User input determines direction
         snake.move(direction, screen_width, screen_height)       
-        snake.get_food(food, screen_width, screen_height)
         repaint(screen, snake, food, level)
         paint_hud(screen)
         pygame.display.update()     # Update Display
