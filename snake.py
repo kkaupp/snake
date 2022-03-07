@@ -20,7 +20,7 @@ WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
 BACKGROUND = config['config']['background']
 COLOR = config['config']['color']
 
-BACKGROUND = pygame.image.load(os.path.join('ressources', BACKGROUND)).convert()
+BACKGROUND = pygame.image.load(os.path.join('resources', BACKGROUND)).convert()
 BACKGROUND = pygame.transform.scale(BACKGROUND, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
 ## Constants ##
@@ -44,7 +44,7 @@ class Food(Moveble_object):
 
     def generate_new_food(self):
         foodimage = str(random.randrange(0, 3, 1))
-        self.image = pygame.image.load(os.path.join('ressources', f'{foodimage}food.png')).convert_alpha()
+        self.image = pygame.image.load(os.path.join('resources', f'{foodimage}food.png')).convert_alpha()
         self.position = pygame.Rect(random.randrange(SCALE, WINDOW_WIDTH - SCALE, SCALE), random.randrange(SCALE, WINDOW_HEIGHT - SCALE, SCALE), SCALE, SCALE)
         
     def draw(self, screen):
@@ -111,7 +111,6 @@ def handle_keys(direction):
             new_direction = Direction.LEFT 
         if (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and direction != Direction.LEFT: 
             new_direction = Direction.RIGHT 
-
         # Slow down bro
         if ((event.key == pygame.K_UP or event.key == pygame.K_w) and direction == Direction.DOWN) or ((event.key == pygame.K_DOWN or event.key == pygame.K_s) and direction == Direction.UP) or ((event.key == pygame.K_LEFT or event.key == pygame.K_a) and direction == Direction.RIGHT) or ((event.key == pygame.K_RIGHT or event.key == pygame.K_d) and direction == Direction.LEFT): 
             while SPEED < 1:
@@ -149,7 +148,7 @@ def pause():
                 if event.key == pygame.K_SPACE:
                     paused = False
                     pygame.mixer.music.set_volume(VOLUME)
-                elif event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
         pygame.display.update()
@@ -157,7 +156,7 @@ def pause():
 ## ToDo: Make it pretty, mit ein paar buttons und bessere aufteilung
 def game_over_screen(screen):
     pygame.mixer.music.set_volume(VOLUME * 0.7)
-    font = pygame.font.Font(os.path.join('ressources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * 3)
+    font = pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * 3)
     render = font.render(f'Game Over! SCORE: {SCORE}', True, pygame.Color('black'))
     rect = render.get_rect()    # xD
     rect.midtop = (WINDOW_WIDTH/2-SCALE, WINDOW_HEIGHT/2-SCALE)
@@ -177,11 +176,12 @@ def quit():
                     sys.exit()
 
 def paint_hud(screen):
-    font = pygame.font.Font(os.path.join('ressources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE*2)
+    font = pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE*2)
     render = font.render(f'SCORE: {SCORE}', True, pygame.Color('black'))
     rect = render.get_rect()
     screen.blit(render, rect) 
     pygame.display.flip()
+
 
 def game(screen, level):    # Game Loop
     snake = Character()

@@ -40,11 +40,89 @@ WINDOW_HEIGHT = (args.height) // SCALE * SCALE
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 import snake, levels
+from button import Button
 
-class Mainmenu():
-    pass
+BG = pygame.image.load("resources/pepe.png")
+BG = pygame.transform.scale(BG, (WINDOW_WIDTH, WINDOW_HEIGHT))
+
+def font():
+    return pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * 3)
+
+def play():
+    while True:
+        snake.game(WINDOW, levels.Level1())
+        
+        PLAY_MOUSE_POS = pygame.mouse.get_pos()
+        PLAY_BACK = Button(image=None, pos=(640, 460), text_input="BACK", font=font(), base_color="Black", hovering_color="Green")
+        PLAY_BACK.changeColor(PLAY_MOUSE_POS)
+        PLAY_BACK.update(WINDOW)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
+                    main_menu()
+
+        pygame.display.update()
+    
+def options():
+    while True:
+        pygame.display.set_caption('Options')
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
+        WINDOW.fill("black")
+        OPTIONS_TEXT = font().render("Options", True, "White")
+        OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/4))
+        WINDOW.blit(OPTIONS_TEXT, OPTIONS_RECT)
+        OPTIONS_BACK = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(), base_color="White", hovering_color="Green")
+        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_BACK.update(WINDOW)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
+                    main_menu()
+
+        pygame.display.update()
+
+def main_menu():
+    while True:
+        pygame.display.set_caption('Main Menu')
+        WINDOW.blit(BG, (0, 0))
+        MENU_MOUSE_POS = pygame.mouse.get_pos()
+        MENU_TEXT = font().render("MAIN MENU", True, "#b68f40")
+        MENU_RECT = MENU_TEXT.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
+        PLAY_BUTTON = Button(image=pygame.image.load("resources/rect_play.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="PLAY", font=font(), base_color="#d7fcd4", hovering_color="White")
+        OPTIONS_BUTTON = Button(image=pygame.image.load("resources/rect_options.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), text_input="OPTIONS", font=font(), base_color="#d7fcd4", hovering_color="White")
+        QUIT_BUTTON = Button(image=pygame.image.load("resources/rect_quit.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.5), text_input="QUIT", font=font(), base_color="#d7fcd4", hovering_color="White")
+        WINDOW.blit(MENU_TEXT, MENU_RECT)
+
+        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
+            button.changeColor(MENU_MOUSE_POS)
+            button.update(WINDOW)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    play()
+                if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    options()
+                if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    pygame.quit()
+                    sys.exit()
+
+        pygame.display.update()
+
    
 if __name__ == '__main__':
-    run = True
+    main_menu()
+    run = False
     while run:
         snake.game(WINDOW, levels.Level1())
