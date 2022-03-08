@@ -3,7 +3,7 @@ from button import Button
 
 ## Read config.ini ##
 config = configparser.ConfigParser()
-config.read(os.path.join('config.ini'))
+config.read(os.path.join('resources', 'config.ini'))
 SCALE = int(config['config']['scale']) // 2 * 2     # To ensure that it is a multiple of 2
 VOLUME = float(config['config']['volume'])
 WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
@@ -31,7 +31,7 @@ WINDOW_HEIGHT = (args.height) // SCALE * SCALE    # overrides config setting wit
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 
-import snake, levels, music
+import snake, levels, music, scorelib
 
 
 def font(size):
@@ -116,7 +116,20 @@ def play():
     music.fade_music(VOLUME, "in")
 
     if score > 0:
-        pass
+        if isinstance(level, levels.Level):
+            level_name = 'level'
+        
+        if isinstance(level, levels.Level1):
+            level_name = 'level1'
+
+        if isinstance(level, levels.Level2):
+            level_name = 'level2'
+
+        if isinstance(level, levels.Level3):
+            level_name = 'level3'
+
+        scorelib.set_score(username, level_name, score)
+
         # PLAY_MOUSE_POS = pygame.mouse.get_pos()
         # PLAY_BACK = Button(image=None, pos=(screen_width/2, screen_height/2), text_input="BACK", font=font(2), base_color="Black", hovering_color="Green")
         # PLAY_BACK.changeColor(PLAY_MOUSE_POS)
@@ -198,7 +211,7 @@ def resolution():
                     
                 if btn_resolution_back.checkForInput(mouse_pos):
                     if config_changed == True:
-                        with open('config.ini', 'w') as configfile:
+                        with open(os.path.join('resources', 'config.ini'), 'w') as configfile:
                             config.set('config', 'width', f'{width}')
                             config.set('config', 'height', f'{height}')
                             config.write(configfile)
@@ -266,7 +279,7 @@ def options():
                     resolution()
                 
                 if btn_options_back.checkForInput(mouse_pos):
-                    with open('config.ini', 'w') as configfile:
+                    with open(os.path.join('resources', 'config.ini'), 'w') as configfile:
                         config.set('config', 'volume', f'{volume:.1f}')
                         config.write(configfile)
                     return

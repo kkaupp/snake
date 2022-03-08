@@ -1,4 +1,4 @@
-import pygame, random, time, os, configparser, music
+import pygame, random, time, os, configparser, music, sys
 from pygame.locals import *
 from enum import Enum
 ## ToDo: Komentare :(
@@ -7,7 +7,7 @@ __version__ = '4.2'
 
 ## Read config.ini ##
 config = configparser.ConfigParser()
-config.read(os.path.join('config.ini'))
+config.read(os.path.join('resources', 'config.ini'))
 SCALE = int(config['config']['scale']) // 2 * 2     # To ensure that it is a multiple of 2
 SCORE = int(config['config']['score'])
 SPEED = float(config['config']['speed'])
@@ -113,7 +113,7 @@ def handle_keys(screen, direction):
     return new_direction
 
 def repaint(screen, snake, food, level):
-    config.read(os.path.join('config.ini'))
+    config.read(os.path.join('resources', 'config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
     backgroundimage = level.background
@@ -143,8 +143,10 @@ def repaint(screen, snake, food, level):
 
     snake.draw(screen)
 
+
+
 def pause_screen(screen):
-    config.read(os.path.join('config.ini'))
+    config.read(os.path.join('resources', 'config.ini'))
     volume = float(config['config']['volume'])
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
@@ -209,7 +211,7 @@ def pause(screen, mode):
 ## ToDo: Make it pretty, mit ein paar buttons und bessere aufteilung    
 
 def game_over(screen):
-    config.read(os.path.join('config.ini'))
+    config.read(os.path.join('resources', 'config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
     volume = float(config['config']['volume'])
@@ -243,7 +245,7 @@ def game(screen, level):    # Game Loop
     SCORE = 0
     gameover = False
     COLOR = level.textcolor
-    config.read(os.path.join('config.ini'))
+    config.read(os.path.join('resources', 'config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
     snake = Character(screen_width, screen_height)
