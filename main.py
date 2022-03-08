@@ -3,15 +3,15 @@ from button import Button
 
 ## Read config.ini ##
 config = configparser.ConfigParser()
-config.read(os.path.join('resources', 'config.ini'))
-SCALE = int(config['config']['scale']) // 2 * 2     # To ensure that it is a multiple of 2
-WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
-WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
+config.read(os.path.join('resources', 'config.ini'))                # Read config.ini
+SCALE = int(config['config']['scale']) // 2 * 2                     # To ensure that it is a multiple of 2
+WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE      # Read width from config.ini
+WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE    # Read height from config.ini
 
 ## Argparse ##
 parser = argparse.ArgumentParser(description='Snake Game for Python class')
-parser.add_argument('-x', '--width', metavar='', type=int, help='Set specific screen width, default value: ' + str(WINDOW_WIDTH), default=WINDOW_WIDTH)        # uses default of config
-parser.add_argument('-y', '--height', metavar='', type=int, help='Set specific screen height, default value: ' + str(WINDOW_HEIGHT), default=WINDOW_HEIGHT)    # uses default of config
+parser.add_argument('-x', '--width', metavar='', type=int, help='Set specific screen width, default value: ' + str(WINDOW_WIDTH), default=WINDOW_WIDTH)        # Uses default of config.ini
+parser.add_argument('-y', '--height', metavar='', type=int, help='Set specific screen height, default value: ' + str(WINDOW_HEIGHT), default=WINDOW_HEIGHT)    # Uses default of config.ini
 parser.add_argument('-b', '--background', metavar='', type=str, help='Set own mainmenu background image', default='pepe.png')    
 parser.add_argument('-m', '--music', metavar='', type=str, help='Set own mainmenu music', default='8_Bit_Fantasy_Adventure_Music.mp3')   
 parser.add_argument('-c', '--color', metavar='', type=str, help='Set snake color, supports basic colors', default='white')    
@@ -21,23 +21,30 @@ args = parser.parse_args()
 pygame.init()    # Initialize Game
 
 ## Music ##
-pygame.mixer.music.load(os.path.join('sounds', args.music))
-pygame.mixer.music.play(-1,0.0)
-pygame.mixer.music.set_volume(float(config['config']['volume']))
+pygame.mixer.music.load(os.path.join('sounds', args.music))         # Loads main menu music
+pygame.mixer.music.play(-1,0.0)                                     # Infinite loop of music
+pygame.mixer.music.set_volume(float(config['config']['volume']))    # Sets volume of config
 
 ## Size ##
-WINDOW_WIDTH = (args.width) // SCALE * SCALE      # overrides config setting with argparse
-WINDOW_HEIGHT = (args.height) // SCALE * SCALE    # overrides config setting with argparse
-WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+WINDOW_WIDTH = (args.width) // SCALE * SCALE                       # Overrides config width setting with argparse
+WINDOW_HEIGHT = (args.height) // SCALE * SCALE                     # Overrides config width setting with argparse
+WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))    # Defines size of entire screen 
 
 
 import snake, levels, music, scorelib
 
 
 def font(size):
+    """ Returns font at specific size used for displayed text 
+
+        Args: 
+            size: int - multiplies with SCALE
+    """
     return pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE * size)
 
 def get_username():
+    """ View, used to receive username from user """
+
     user_input = ''
     txt_username = font(1).render('Enter Username and press Enter:', True, "White")
     rect_txt_username = txt_username.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
@@ -63,6 +70,13 @@ def get_username():
         pygame.display.update()
         
 def choose_level(username, screen_width, screen_height):
+    """ Returns 
+
+        Args: 
+            username: string - multiplies with SCALE
+            screen_width:
+            screen_height:
+    """
     txt_choose_level = font(2).render("Select Level:", True, "White")
     btn_choose_level_0 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Fun Mode", font=font(1), base_color="White", hovering_color="Red")
     btn_choose_level_1 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Level 1", font=font(1), base_color="White", hovering_color="Green")
