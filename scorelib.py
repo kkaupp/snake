@@ -1,7 +1,4 @@
 import json, os
-
-
-
 def get_highscore(level):
     #filehandle
     with open(os.path.join('resources', 'score.json'), 'r') as json_file:
@@ -12,7 +9,7 @@ def get_highscore(level):
     for name in data:
         values = data.get(name)
         for key in values.items():
-            if key[0] == level:
+            if key[0] == level and key[1] > 0:
                 dict_score[name] = key[1]
     
     return {k: v for k, v in sorted(dict_score.items(), key=lambda item: item[1], reverse=True)}
@@ -41,7 +38,3 @@ def set_score(player, level, score):
 
     with open(os.path.join('resources', 'score.json'), 'w') as outfile:
         outfile.write(json.dumps(data))
-
-print(get_highscore('level1'))
-#print(get_score('a'))
-#print(set_score('player1', 'level1', 23))
