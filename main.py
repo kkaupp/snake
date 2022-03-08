@@ -5,7 +5,6 @@ from button import Button
 config = configparser.ConfigParser()
 config.read(os.path.join('resources', 'config.ini'))
 SCALE = int(config['config']['scale']) // 2 * 2     # To ensure that it is a multiple of 2
-VOLUME = float(config['config']['volume'])
 WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
 WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
 
@@ -23,7 +22,7 @@ pygame.init()    # Initialize Game
 ## Music ##
 pygame.mixer.music.load(os.path.join('sounds', args.music))
 pygame.mixer.music.play(-1,0.0)
-pygame.mixer.music.set_volume(VOLUME)
+pygame.mixer.music.set_volume(float(config['config']['volume']))
 
 ## Size ##
 WINDOW_WIDTH = (args.width) // SCALE * SCALE      # overrides config setting with argparse
@@ -107,13 +106,13 @@ def play():
     username = get_username()
     level = choose_level(screen_width, screen_height)
     if level != None:
-        music.fade_music(VOLUME, "out")
+        music.fade_music(float(config['config']['volume']), "out")
         pygame.mixer.music.pause()
         score = snake.game(WINDOW, level)
-    print(username, score)
-    pygame.mixer.music.load(os.path.join('sounds', args.music))
-    pygame.mixer.music.play()
-    music.fade_music(VOLUME, "in")
+
+        pygame.mixer.music.load(os.path.join('sounds', args.music))
+        pygame.mixer.music.play()
+        music.fade_music(float(config['config']['volume']), "in")
 
     if score > 0:
         if isinstance(level, levels.Level):
@@ -226,7 +225,7 @@ def resolution():
 
 def options():
     volume = float(config.get('config', 'volume'))
-    saved_volume = volume
+    muted_volume = float(config.get('config', 'muted_volume'))
     txt_options = font(2).render("Options", True, "White")
     start_width = WINDOW_WIDTH
     start_height = WINDOW_HEIGHT
@@ -257,21 +256,20 @@ def options():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
 
                 if btn_options_volume.checkForInput(mouse_pos):
-                    if saved_volume == 0 or saved_volume == 0.00 or saved_volume == -0.0 or saved_volume == -0.00:
-                        saved_volume = 0.25
-                    if volume == 0 or volume == 0.00 or volume == -0.0 or volume == -0.00:
-                        volume = saved_volume
-                    else:
+                    if volume > 0:
+                        muted_volume = volume
                         volume = 0
+                    else:
+                        volume = muted_volume
                     pygame.mixer.music.set_volume(volume)
 
                 if btn_options_volume_down.checkForInput(mouse_pos):
-                    if volume > 0:
+                    if volume > 0 and volume <= 0.5:
                         volume -= 0.05
                     pygame.mixer.music.set_volume(volume)
 
                 if btn_options_volume_up.checkForInput(mouse_pos):
-                    if volume < 0.5:
+                    if volume < 0.5 and volume >= 0:
                         volume += 0.05
                     pygame.mixer.music.set_volume(volume)
 
@@ -281,6 +279,7 @@ def options():
                 if btn_options_back.checkForInput(mouse_pos):
                     with open(os.path.join('resources', 'config.ini'), 'w') as configfile:
                         config.set('config', 'volume', f'{volume:.1f}')
+                        config.set('config', 'muted_volume', f'{muted_volume:.1f}')
                         config.write(configfile)
                     return
 
