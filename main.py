@@ -130,19 +130,20 @@ def play():
         scorelib.set_score(username, level_name, score)
 
 def score_level1():
-    start_width = WINDOW_WIDTH
-    start_height = WINDOW_HEIGHT
-
     score_dict = scorelib.get_highscore('level1')
-    print(score_dict)
-    
-    pos1, pos2, pos3 = '1', '2', '3'
-    score1, score2, score3 = '1', '2', '3'
+    count = 0
+    pos = ['-', '-', '-']
+    pos_score = ['-', '-', '-']
+
+    for user, score in score_dict.items():
+        pos[count] = user
+        pos_score[count] = score
+        count += 1
     
     txt_score_level1 = font(2).render("Scoreboard Level 1", True, "White")
-    txt_score_level1_pos1 = font(1).render(f"#1 | {score1} | {pos1}", True, "White")
-    txt_score_level1_pos2 = font(1).render(f"#2 | {pos2} | {score2}", True, "White")
-    txt_score_level1_pos3 = font(1).render(f"#3 | {pos3} | {score3}", True, "White")
+    txt_score_level1_pos1 = font(1).render(f"#1 | {pos_score[0]} | {pos[0]}", True, "White")
+    txt_score_level1_pos2 = font(1).render(f"#2 | {pos_score[1]} | {pos[1]}", True, "White")
+    txt_score_level1_pos3 = font(1).render(f"#3 | {pos_score[2]} | {pos[2]}", True, "White")
 
     rect_score_level1 = txt_score_level1.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
     rect_score_level1_pos1 = txt_score_level1_pos1.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3))
@@ -177,8 +178,6 @@ def score_level1():
 
 def score():
     txt_score = font(2).render("Scoreboard", True, "White")
-    start_width = WINDOW_WIDTH
-    start_height = WINDOW_HEIGHT
     rect_score = txt_score.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
     btn_score_level1 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Level 1", font=font(1), base_color="White", hovering_color="Green")
     btn_score_level2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Level 2", font=font(1), base_color="White", hovering_color="Green")
