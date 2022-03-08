@@ -85,13 +85,13 @@ class Character(Moveble_object):
         pygame.mixer.Sound(os.path.join("sounds" ,config['config']['eat'])).play()
         food.generate_new_food(screen_width, screen_height)
 
-def handle_keys(direction):
+def handle_keys(screen, direction):
     new_direction = direction   # Keep direction if no event
     global SPEED
     for event in [e for e in pygame.event.get() if e.type == pygame.KEYDOWN]:   # Only handle key events, ignore all other events
         # Pause
-        if event.key == pygame.K_SPACE:
-            pause()
+        if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
+            pause(screen, pause)
         # Change direction
         if (event.key == pygame.K_UP or event.key == pygame.K_w) and direction != Direction.DOWN:    # Can't go up, if down before 
             new_direction = Direction.UP 
@@ -144,12 +144,57 @@ def repaint(screen, snake, food, level):
 
     snake.draw(screen)
 
-def pause():
+def pause_screen(screen):
     config.read(os.path.join('config.ini'))
     volume = float(config['config']['volume'])
+    screen_width = int(config['config']['width']) // SCALE * SCALE
+    screen_height = int(config['config']['height']) // SCALE * SCALE
+    font = pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE * 2)
+    render = font.render(f'Pause', True, pygame.Color(COLOR))
+    rect = render.get_rect(center=(screen_width/2, screen_height/2 - 30))
+    while True:
+        screen.blit(render, rect)
+        pygame.mixer.music.set_volume(volume * 0.5)
+        from button import Button
+        btn_pause_screen_back = Button(image=None, pos=(screen_width/6, screen_height/1.2), text_input="MENU", font=font, base_color="Black", hovering_color="Green")  
+        mouse_pos = pygame.mouse.get_pos()
 
+        for button in [btn_pause_screen_back]:
+            button.changeColor(mouse_pos)
+            button.update(screen)
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if btn_pause_screen_back.checkForInput(mouse_pos):
+                    return True
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
+                    pygame.mixer.music.set_volume(volume)
+                    return
+
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        pygame.display.update()
+
+def pause(screen, mode):
+    config.read(os.path.join('config.ini'))
+    volume = float(config['config']['volume'])
+    
+    if mode == pause:
+        leave = pause_screen(screen)
+        if leave != True:
+            return
+        else:
+            global gameover
+            gameover = True
+            return
+            
     while True:
         pygame.mixer.music.set_volume(volume * 0.5)
+
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
@@ -160,6 +205,7 @@ def pause():
                 sys.exit()
 
         pygame.display.update()
+    
 
 ## ToDo: Make it pretty, mit ein paar buttons und bessere aufteilung    
 
@@ -182,7 +228,7 @@ def game_over(screen):
     screen.blit(render, rect)
     pygame.display.flip()
     pygame.mixer.Sound(os.path.join("sounds" ,config['config']['game_over'])).play()
-    pause()
+    pause(screen, 0)
     global gameover
     gameover = True
 
@@ -211,7 +257,7 @@ def game(screen, level):    # Game Loop
     fps = int(config['config']['fps'])
 
     while True:
-        direction = handle_keys(direction)    # User input determines direction
+        direction = handle_keys(screen, direction)    # User input determines direction
         snake.move(direction, screen_width, screen_height)       
         repaint(screen, snake, food, level)
         paint_hud(screen)

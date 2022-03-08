@@ -213,15 +213,16 @@ def resolution():
 
 def options():
     volume = float(config.get('config', 'volume'))
+    saved_volume = volume
     txt_options = font(2).render("Options", True, "White")
     start_width = WINDOW_WIDTH
     start_height = WINDOW_HEIGHT
     init = True
-
+    
     while True:
         # Update the screen with initial start and every time the resolution is changed
         if start_height != WINDOW_HEIGHT or start_width != WINDOW_WIDTH or init == True:
-            btn_options_volume = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Volume", font=font(1), base_color="White", hovering_color="White")
+            btn_options_volume = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Volume", font=font(1), base_color="White", hovering_color="Green")
             btn_options_volume_down = Button(image=None, pos=(WINDOW_WIDTH/2 - SCALE*4, WINDOW_HEIGHT/3), text_input="-", font=font(1), base_color="White", hovering_color="Green")
             btn_options_volume_up = Button(image=None, pos=(WINDOW_WIDTH/2 + SCALE*4, WINDOW_HEIGHT/3), text_input="+", font=font(1), base_color="White", hovering_color="Green")
             btn_options_resolution = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Resolution", font=font(1), base_color="White", hovering_color="Green")
@@ -241,6 +242,15 @@ def options():
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+
+                if btn_options_volume.checkForInput(mouse_pos):
+                    if saved_volume == 0 or saved_volume == 0.00 or saved_volume == -0.0 or saved_volume == -0.00:
+                        saved_volume = 0.25
+                    if volume == 0 or volume == 0.00 or volume == -0.0 or volume == -0.00:
+                        volume = saved_volume
+                    else:
+                        volume = 0
+                    pygame.mixer.music.set_volume(volume)
 
                 if btn_options_volume_down.checkForInput(mouse_pos):
                     if volume > 0:
