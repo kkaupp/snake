@@ -154,8 +154,8 @@ def play():
 
         scorelib.set_score(username, level_name, score)
 
-def score_level0():
-    score_dict = scorelib.get_highscore('level')
+def score_level(level):
+    score_dict = scorelib.get_highscore(f'level{level}')
     count = 0
     pos = ['-', '-', '-']
     pos_score = ['-', '-', '-']
@@ -164,176 +164,37 @@ def score_level0():
         pos[count] = user
         pos_score[count] = score
         count += 1
-    
-    txt_score_level0 = font(2).render("Scoreboard Fun Mode", True, "White")
-    txt_score_level0_pos1 = font(1).render(f"#1 | {pos_score[0]} | {pos[0]}", True, "White")
-    txt_score_level0_pos2 = font(1).render(f"#2 | {pos_score[1]} | {pos[1]}", True, "White")
-    txt_score_level0_pos3 = font(1).render(f"#3 | {pos_score[2]} | {pos[2]}", True, "White")
 
-    rect_score_level0 = txt_score_level0.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
-    rect_score_level0_pos1 = txt_score_level0_pos1.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3))
-    rect_score_level0_pos2 = txt_score_level0_pos2.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2))
-    rect_score_level0_pos3 = txt_score_level0_pos3.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7))
+    if level == 0:
+        txt_score_level = font(2).render("Scoreboard Fun Mode", True, "White")
+    else:
+        txt_score_level = font(2).render(f"Scoreboard Level {level}", True, "White")
 
-    btn_score_level0_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(1), base_color="White", hovering_color="Green")
+    txt_score_level_pos1 = font(1).render(f"#1 | {pos_score[0]} | {pos[0]}", True, "White")
+    txt_score_level_pos2 = font(1).render(f"#2 | {pos_score[1]} | {pos[1]}", True, "White")
+    txt_score_level_pos3 = font(1).render(f"#3 | {pos_score[2]} | {pos[2]}", True, "White")
+
+    rect_score_level = txt_score_level.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
+    rect_score_level_pos1 = txt_score_level_pos1.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3))
+    rect_score_level_pos2 = txt_score_level_pos2.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2))
+    rect_score_level_pos3 = txt_score_level_pos3.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7))
+
+    btn_score_level_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(1), base_color="White", hovering_color="Green")
 
     WINDOW.fill("black")
-    WINDOW.blit(txt_score_level0, rect_score_level0)
-    WINDOW.blit(txt_score_level0_pos1, rect_score_level0_pos1)
-    WINDOW.blit(txt_score_level0_pos2, rect_score_level0_pos2)
-    WINDOW.blit(txt_score_level0_pos3, rect_score_level0_pos3)
+    WINDOW.blit(txt_score_level, rect_score_level)
+    WINDOW.blit(txt_score_level_pos1, rect_score_level_pos1)
+    WINDOW.blit(txt_score_level_pos2, rect_score_level_pos2)
+    WINDOW.blit(txt_score_level_pos3, rect_score_level_pos3)
 
     while True:
         mouse_pos = pygame.mouse.get_pos()
-
-        for button in [btn_score_level0_back]:
-            button.changeColor(mouse_pos)
-            button.update(WINDOW)
+        btn_score_level_back.changeColor(mouse_pos)
+        btn_score_level_back.update(WINDOW)
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if btn_score_level0_back.checkForInput(mouse_pos):
-                    return
-
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-        pygame.display.update()
-
-def score_level1():
-    score_dict = scorelib.get_highscore('level1')
-    count = 0
-    pos = ['-', '-', '-']
-    pos_score = ['-', '-', '-']
-
-    for user, score in score_dict.items():
-        pos[count] = user
-        pos_score[count] = score
-        count += 1
-    
-    txt_score_level1 = font(2).render("Scoreboard Level 1", True, "White")
-    txt_score_level1_pos1 = font(1).render(f"#1 | {pos_score[0]} | {pos[0]}", True, "White")
-    txt_score_level1_pos2 = font(1).render(f"#2 | {pos_score[1]} | {pos[1]}", True, "White")
-    txt_score_level1_pos3 = font(1).render(f"#3 | {pos_score[2]} | {pos[2]}", True, "White")
-
-    rect_score_level1 = txt_score_level1.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
-    rect_score_level1_pos1 = txt_score_level1_pos1.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3))
-    rect_score_level1_pos2 = txt_score_level1_pos2.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2))
-    rect_score_level1_pos3 = txt_score_level1_pos3.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7))
-
-    btn_score_level1_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(1), base_color="White", hovering_color="Green")
-
-    WINDOW.fill("black")
-    WINDOW.blit(txt_score_level1, rect_score_level1)
-    WINDOW.blit(txt_score_level1_pos1, rect_score_level1_pos1)
-    WINDOW.blit(txt_score_level1_pos2, rect_score_level1_pos2)
-    WINDOW.blit(txt_score_level1_pos3, rect_score_level1_pos3)
-
-    while True:
-        mouse_pos = pygame.mouse.get_pos()
-
-        for button in [btn_score_level1_back]:
-            button.changeColor(mouse_pos)
-            button.update(WINDOW)
-
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if btn_score_level1_back.checkForInput(mouse_pos):
-                    return
-
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-        pygame.display.update()
-
-def score_level2():
-    score_dict = scorelib.get_highscore('level2')
-    count = 0
-    pos = ['-', '-', '-']
-    pos_score = ['-', '-', '-']
-
-    for user, score in score_dict.items():
-        pos[count] = user
-        pos_score[count] = score
-        count += 1
-    
-    txt_score_level2 = font(2).render("Scoreboard Level 2", True, "White")
-    txt_score_level2_pos1 = font(1).render(f"#1 | {pos_score[0]} | {pos[0]}", True, "White")
-    txt_score_level2_pos2 = font(1).render(f"#2 | {pos_score[1]} | {pos[1]}", True, "White")
-    txt_score_level2_pos3 = font(1).render(f"#3 | {pos_score[2]} | {pos[2]}", True, "White")
-
-    rect_score_level2 = txt_score_level2.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
-    rect_score_level2_pos1 = txt_score_level2_pos1.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3))
-    rect_score_level2_pos2 = txt_score_level2_pos2.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2))
-    rect_score_level2_pos3 = txt_score_level2_pos3.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7))
-
-    btn_score_level2_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(1), base_color="White", hovering_color="Green")
-
-    WINDOW.fill("black")
-    WINDOW.blit(txt_score_level2, rect_score_level2)
-    WINDOW.blit(txt_score_level2_pos1, rect_score_level2_pos1)
-    WINDOW.blit(txt_score_level2_pos2, rect_score_level2_pos2)
-    WINDOW.blit(txt_score_level2_pos3, rect_score_level2_pos3)
-
-    while True:
-        mouse_pos = pygame.mouse.get_pos()
-
-        for button in [btn_score_level2_back]:
-            button.changeColor(mouse_pos)
-            button.update(WINDOW)
-
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if btn_score_level2_back.checkForInput(mouse_pos):
-                    return
-
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-        pygame.display.update()
-
-def score_level3():
-    score_dict = scorelib.get_highscore('level3')
-    count = 0
-    pos = ['-', '-', '-']
-    pos_score = ['-', '-', '-']
-
-    for user, score in score_dict.items():
-        pos[count] = user
-        pos_score[count] = score
-        count += 1
-    
-    txt_score_level3 = font(2).render("Scoreboard Level 3", True, "White")
-    txt_score_level3_pos1 = font(1).render(f"#1 | {pos_score[0]} | {pos[0]}", True, "White")
-    txt_score_level3_pos2 = font(1).render(f"#2 | {pos_score[1]} | {pos[1]}", True, "White")
-    txt_score_level3_pos3 = font(1).render(f"#3 | {pos_score[2]} | {pos[2]}", True, "White")
-
-    rect_score_level3 = txt_score_level3.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
-    rect_score_level3_pos1 = txt_score_level3_pos1.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3))
-    rect_score_level3_pos2 = txt_score_level3_pos2.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2))
-    rect_score_level3_pos3 = txt_score_level3_pos3.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7))
-
-    btn_score_level3_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(1), base_color="White", hovering_color="Green")
-
-    WINDOW.fill("black")
-    WINDOW.blit(txt_score_level3, rect_score_level3)
-    WINDOW.blit(txt_score_level3_pos1, rect_score_level3_pos1)
-    WINDOW.blit(txt_score_level3_pos2, rect_score_level3_pos2)
-    WINDOW.blit(txt_score_level3_pos3, rect_score_level3_pos3)
-
-    while True:
-        mouse_pos = pygame.mouse.get_pos()
-
-        for button in [btn_score_level3_back]:
-            button.changeColor(mouse_pos)
-            button.update(WINDOW)
-
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if btn_score_level3_back.checkForInput(mouse_pos):
+                if btn_score_level_back.checkForInput(mouse_pos):
                     return
 
             if event.type == pygame.QUIT:
@@ -364,13 +225,13 @@ def score():
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if btn_score_level0.checkForInput(mouse_pos):
-                    score_level0()
+                    score_level(0)
                 if btn_score_level1.checkForInput(mouse_pos):
-                    score_level1()
+                    score_level(1)
                 if btn_score_level2.checkForInput(mouse_pos):
-                    score_level2()
+                    score_level(2)
                 if btn_score_level3.checkForInput(mouse_pos):
-                    score_level3()
+                    score_level(3)
                 if btn_score_back.checkForInput(mouse_pos):
                     return
 
