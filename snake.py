@@ -45,16 +45,34 @@ class Food(Moveble_object):
 class Character(Moveble_object):
     body = []
 
+    # Circle Mode without Pictures
+    # def __init__(self, screen_width, screen_height):
+    #     Moveble_object.__init__(self)
+    #     self.position = [int((screen_width//SCALE//2)*SCALE - (SCALE/2)), int((screen_height//SCALE//2)*SCALE - (SCALE/2))]     # middle of the screen
+    #     self.rect = pygame.Rect(self.position[0], self.position[1], SCALE, SCALE)
+    #     self.body = [[SCALE, SCALE*2]]
+
+    # def draw(self, screen):
+    #     self.rect = pygame.Rect(self.position[0] - SCALE/2, self.position[1] - SCALE/2, SCALE, SCALE) # /2 due to the offcenterd position
+    #     for body in self.body:
+    #         pygame.draw.circle(screen, pygame.Color(COLOR), (body[0], body[1]), int(SCALE/2))
+    
     def __init__(self, screen_width, screen_height):
         Moveble_object.__init__(self)
-        self.position = [int((screen_width//SCALE//2)*SCALE - (SCALE/2)), int((screen_height//SCALE//2)*SCALE - (SCALE/2))]     # middle of the screen
+        self.position = [int((screen_width//SCALE//2)*SCALE), int((screen_height//SCALE//2)*SCALE)]     # middle of the screen
         self.rect = pygame.Rect(self.position[0], self.position[1], SCALE, SCALE)
         self.body = [[SCALE, SCALE*2]]
 
     def draw(self, screen):
         for body in self.body:
-            pygame.draw.circle(screen, pygame.Color(COLOR), (body[0], body[1]), int(SCALE/2))
-        self.rect = pygame.Rect(self.position[0] - SCALE/2, self.position[1] - SCALE/2, SCALE, SCALE) # /2 due to the offcenterd position
+            if self.body[0] == body:
+                self.image = pygame.image.load(os.path.join('resources', 'cat.png')).convert_alpha()
+            else:
+                self.image = pygame.image.load(os.path.join('resources', 'rainbow.png')).convert_alpha()
+
+            self.rect = pygame.Rect(body[0], body[1], SCALE, SCALE)
+            screen.blit(self.image, self.rect)
+        self.rect = pygame.Rect(self.position[0], self.position[1], SCALE, SCALE)
 
     def move(self, direction, screen_width, screen_height):
         if direction == Direction.UP:
@@ -67,16 +85,26 @@ class Character(Moveble_object):
             self.position[0] += SCALE
 
         if self.position[0] > screen_width:
-            self.position[0] = int(0 + SCALE / 2)
-        
+            self.position[0] = SCALE
         if self.position[0] < 0:
-            self.position[0] = int(screen_width - SCALE / 2)
-
+            self.position[0] = int(screen_width - SCALE)
         if self.position[1] > screen_height:
-            self.position[1] = int(0 + SCALE / 2)
-
+            self.position[1] = int(0 + SCALE)
         if self.position[1] < 0:
-            self.position[1] = int(screen_height - SCALE / 2)
+            self.position[1] = int(screen_height - SCALE)
+
+        # Circle Mode without Pictures. Just comment the block of 4 if clausels above
+        # if self.position[0] > screen_width:
+        #     self.position[0] = int(0 + SCALE / 2)
+        
+        # if self.position[0] < 0:
+        #     self.position[0] = int(screen_width - SCALE / 2)
+
+        # if self.position[1] > screen_height:
+        #     self.position[1] = int(0 + SCALE / 2)
+
+        # if self.position[1] < 0:
+        #     self.position[1] = int(screen_height - SCALE / 2)
 
         self.body.insert(0, list(self.position))
 
