@@ -30,7 +30,7 @@ def set_score(player, level, score):
         data = json.load(json_file)
 
     if data.get(player) != None:
-        if data[player][level] > score:
+        if data[player][level] < score:
             data[player][level] = score
     else:
         data[player] = {"level": 0, "level1": 0, "level2": 0, "level3": 0}

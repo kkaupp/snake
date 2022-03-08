@@ -62,12 +62,26 @@ def get_username():
         WINDOW.blit(edt_username, rect_edt_username)
         pygame.display.update()
         
-def choose_level(screen_width, screen_height):
+def choose_level(username, screen_width, screen_height):
     txt_choose_level = font(2).render("Select Level:", True, "White")
     btn_choose_level_0 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Fun Mode", font=font(1), base_color="White", hovering_color="Red")
     btn_choose_level_1 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Level 1", font=font(1), base_color="White", hovering_color="Green")
-    btn_choose_level_2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(1), base_color="White", hovering_color="Green")
-    btn_choose_level_3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(1), base_color="White", hovering_color="Green")
+
+    score = scorelib.get_score(username)
+    button_enabled = [True, True]
+
+    if score.get('level1') >= 3:
+        btn_choose_level_2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(1), base_color="White", hovering_color="Green")
+    else:
+        btn_choose_level_2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(1), base_color="Dimgray", hovering_color="Gray")
+        button_enabled[0] = False
+
+    if score.get('level2') >= 3:
+        btn_choose_level_3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(1), base_color="White", hovering_color="Green")
+    else:
+        btn_choose_level_3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(1), base_color="Dimgray", hovering_color="Gray")
+        button_enabled[1] = False
+
     btn_choose_level_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(1), base_color="White", hovering_color="Green")
     rect_choose_level = txt_choose_level.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
     WINDOW.fill("Black")
@@ -86,9 +100,9 @@ def choose_level(screen_width, screen_height):
                     return levels.Level()
                 if btn_choose_level_1.checkForInput(mouse_pos):
                     return levels.Level1(screen_width, screen_height)
-                if btn_choose_level_2.checkForInput(mouse_pos):
+                if btn_choose_level_2.checkForInput(mouse_pos) and button_enabled[0]:
                     return levels.Level2(screen_width, screen_height) 
-                if btn_choose_level_3.checkForInput(mouse_pos):
+                if btn_choose_level_3.checkForInput(mouse_pos) and button_enabled[1]:
                     return levels.Level3(screen_width, screen_height)
                 if btn_choose_level_back.checkForInput(mouse_pos):
                     return None
@@ -105,12 +119,11 @@ def play():
     screen_height = int(config['config']['height']) // SCALE * SCALE
 
     username = get_username()
-    level = choose_level(screen_width, screen_height)
+    level = choose_level(username, screen_width, screen_height)
     if level != None:
         music.fade_music(float(config['config']['volume']), "out")
         pygame.mixer.music.pause()
         score = snake.game(WINDOW, level)
-
         pygame.mixer.music.load(os.path.join('sounds', args.music))
         pygame.mixer.music.play()
         music.fade_music(float(config['config']['volume']), "in")

@@ -1,6 +1,7 @@
 import pygame, random, time, os, configparser, music, sys
 from pygame.locals import *
 from enum import Enum
+from button import Button
 ## ToDo: Komentare :(
 __author__ = 'Kevin Kaupp, Johannes Eulitz, Tatjana Aha'
 __version__ = '4.2'
@@ -11,8 +12,8 @@ config.read(os.path.join('resources', 'config.ini'))
 SCALE = int(config['config']['scale']) // 2 * 2     # To ensure that it is a multiple of 2
 SCORE = int(config['config']['score'])
 SPEED = float(config['config']['speed'])
-COLOR = 'white'
-gameover = False
+COLOR = 'White'
+RETURN_TO_MENU = False
 
 ## Constants ##
 REFRESH_CONTROLLER = pygame.time.Clock()
@@ -90,7 +91,7 @@ def handle_keys(screen, direction):
     for event in [e for e in pygame.event.get() if e.type == pygame.KEYDOWN]:   # Only handle key events, ignore all other events
         # Pause
         if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
-            pause(screen, pause)
+            pause_screen(screen)
         # Change direction
         if (event.key == pygame.K_UP or event.key == pygame.K_w) and direction != Direction.DOWN:    # Can't go up, if down before 
             new_direction = Direction.UP 
@@ -122,42 +123,22 @@ def repaint(screen, snake, food, level):
     screen.blit(background, (0, 0))
     level.wall_list.draw(screen)
     food.draw(screen)
-    # Collision Check
-    if pygame.sprite.spritecollideany(snake, level.wall_list):
-        game_over(screen)
-
-    if pygame.sprite.spritecollideany(food, level.wall_list):
-        food.generate_new_food(screen_width, screen_height)
-
-    foods = [food]
-    if pygame.sprite.spritecollide(snake, foods, False):
-        snake.get_food(food, screen_width, screen_height)
-    else:
-        snake.body.pop()
-
-    for blob in snake.body[1:]:
-        if (snake.position[0] == blob[0] and snake.position[1] == blob[1]):
-            game_over(screen)
-        else:
-            continue
-
     snake.draw(screen)
 
 
 
 def pause_screen(screen):
     config.read(os.path.join('resources', 'config.ini'))
-    volume = float(config['config']['volume'])
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
     font = pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE * 2)
     render = font.render(f'Pause', True, pygame.Color(COLOR))
     rect = render.get_rect(center=(screen_width/2, screen_height/2 - 30))
+    btn_pause_screen_back = Button(image=None, pos=(screen_width/6, screen_height/1.2), text_input="MENU", font=font, base_color=COLOR, hovering_color="Green") 
+    pygame.mixer.music.set_volume(float(config['config']['volume']) * 0.5)
+    screen.blit(render, rect)
+
     while True:
-        screen.blit(render, rect)
-        pygame.mixer.music.set_volume(volume * 0.5)
-        from button import Button
-        btn_pause_screen_back = Button(image=None, pos=(screen_width/6, screen_height/1.2), text_input="MENU", font=font, base_color=COLOR, hovering_color="Green")  
         mouse_pos = pygame.mouse.get_pos()
 
         for button in [btn_pause_screen_back]:
@@ -167,11 +148,13 @@ def pause_screen(screen):
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if btn_pause_screen_back.checkForInput(mouse_pos):
-                    return True
+                    global RETURN_TO_MENU
+                    RETURN_TO_MENU = True
+                    return
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
-                    pygame.mixer.music.set_volume(volume)
+                    pygame.mixer.music.set_volume(float(config['config']['volume']))
                     return
 
             if event.type == pygame.QUIT:
@@ -180,38 +163,23 @@ def pause_screen(screen):
 
         pygame.display.update()
 
-def pause(screen, mode):
-    config.read(os.path.join('config.ini'))
-    volume = float(config['config']['volume'])
-    
-    if mode == pause:
-        leave = pause_screen(screen)
-        if leave != True:
-            return
+def lose_logic(snake, level):
+    # Collision Check
+    if pygame.sprite.spritecollideany(snake, level.wall_list):
+        return True
+
+    for blob in snake.body[1:]:
+        if (snake.position[0] == blob[0] and snake.position[1] == blob[1]):
+            return True
         else:
-            global gameover
-            gameover = True
-            return
-            
-    while True:
-        pygame.mixer.music.set_volume(volume * 0.5)
-
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
-                    pygame.mixer.music.set_volume(volume)
-                    return
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-        pygame.display.update()
+            continue
 
 def game_over(screen):
     config.read(os.path.join('resources', 'config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
     volume = float(config['config']['volume'])
+
     pygame.mixer.music.set_volume(volume * 0.5)
     font = pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE * 2)
     render = font.render(f'Game Over!', True, pygame.Color(COLOR))
@@ -224,11 +192,15 @@ def game_over(screen):
     render = font.render(f'Press "Esc" for Main Menu', True, pygame.Color(COLOR))
     rect = render.get_rect(center=(screen_width/2, screen_height/2+70))
     screen.blit(render, rect)
+
     pygame.display.flip()
     pygame.mixer.Sound(os.path.join("sounds" ,config['config']['game_over'])).play()
-    pause(screen, 0)
-    global gameover
-    gameover = True
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
+                    return
 
 def paint_hud(screen):
     font = pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE*2)
@@ -238,9 +210,9 @@ def paint_hud(screen):
     pygame.display.flip()
 
 def game(screen, level):    # Game Loop
-    global COLOR, gameover, SCORE
+    global COLOR, SCORE, RETURN_TO_MENU
+    RETURN_TO_MENU = False
     SCORE = 0
-    gameover = False
     COLOR = level.textcolor
     config.read(os.path.join('resources', 'config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
@@ -250,19 +222,30 @@ def game(screen, level):    # Game Loop
     direction = Direction.RIGHT    # Initial direction
     pygame.mixer.music.load(os.path.join('sounds', level.music))
     pygame.mixer.music.play(-1,0.0)
-    #pygame.mixer.music.set_volume(float(config['config']['volume']))
     music.fade_music(float(config['config']['volume']), "in")
 
     fps = int(config['config']['fps'])
 
     while True:
         direction = handle_keys(screen, direction)    # User input determines direction
-        snake.move(direction, screen_width, screen_height)       
+        snake.move(direction, screen_width, screen_height)  
+
+        if pygame.sprite.spritecollideany(food, level.wall_list):
+            food.generate_new_food(screen_width, screen_height)
+
+        foods = [food]
+        if pygame.sprite.spritecollide(snake, foods, False):
+            snake.get_food(food, screen_width, screen_height)
+        else:
+            snake.body.pop()
+
         repaint(screen, snake, food, level)
         paint_hud(screen)
-        pygame.display.update()     # Update Display
+        pygame.display.update()     # Update Display      
         REFRESH_CONTROLLER.tick(fps)
         time.sleep(SPEED)
-        if gameover:
+
+        if lose_logic(snake, level) or RETURN_TO_MENU:
+            game_over(screen)
             del snake
             return SCORE
