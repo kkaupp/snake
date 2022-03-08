@@ -252,8 +252,9 @@ def game(screen, level):    # Game Loop
     food = Food(screen_width, screen_height)
     direction = Direction.RIGHT    # Initial direction
     pygame.mixer.music.load(os.path.join('sounds', level.music))
+    pygame.mixer.music.set_volume(float(config['config']['volume']))
     pygame.mixer.music.play(-1,0.0)
-    music.fade_music(float(config['config']['volume']), "in")
+    #music.fade_music(float(config['config']['volume']), "in")
 
     fps = int(config['config']['fps'])
 
