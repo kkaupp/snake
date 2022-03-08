@@ -50,9 +50,8 @@ class Character(Moveble_object):
         self.rect = pygame.Rect(self.position[0], self.position[1], SCALE, SCALE)
 
     def draw(self, screen):
-        color = config['config']['color']
         for body in self.body:
-            pygame.draw.circle(screen, pygame.Color(color), (body[0], body[1]), int(SCALE/2))
+            pygame.draw.circle(screen, pygame.Color(COLOR), (body[0], body[1]), int(SCALE/2))
         self.rect = pygame.Rect(self.position[0] - SCALE/2, self.position[1] - SCALE/2, SCALE, SCALE) # /2 due to the offcenterd position
 
     def move(self, direction, screen_width, screen_height):
@@ -156,7 +155,7 @@ def pause_screen(screen):
         screen.blit(render, rect)
         pygame.mixer.music.set_volume(volume * 0.5)
         from button import Button
-        btn_pause_screen_back = Button(image=None, pos=(screen_width/6, screen_height/1.2), text_input="MENU", font=font, base_color="Black", hovering_color="Green")  
+        btn_pause_screen_back = Button(image=None, pos=(screen_width/6, screen_height/1.2), text_input="MENU", font=font, base_color=COLOR, hovering_color="Green")  
         mouse_pos = pygame.mouse.get_pos()
 
         for button in [btn_pause_screen_back]:
