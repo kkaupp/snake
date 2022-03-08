@@ -22,7 +22,10 @@ def get_score(player):
     with open(os.path.join('resources', 'score.json'), 'r') as json_file:
         data = json.load(json_file)
 
-    return data.get(player)
+        if data.get(player) != None:
+            return data.get(player)
+        else:
+            return {'level': 0, 'level1': 0, 'level2': 0, 'level3': 0}
 
 def set_score(player, level, score):
     # Filehandle
@@ -39,6 +42,6 @@ def set_score(player, level, score):
     with open(os.path.join('resources', 'score.json'), 'w') as outfile:
         outfile.write(json.dumps(data))
 
-#print(get_highscore('level1'))
-#print(get_score('player1'))
+print(get_highscore('level1'))
+#print(get_score('a'))
 #print(set_score('player1', 'level1', 23))
