@@ -206,9 +206,6 @@ def pause(screen, mode):
                 sys.exit()
 
         pygame.display.update()
-    
-
-## ToDo: Make it pretty, mit ein paar buttons und bessere aufteilung    
 
 def game_over(screen):
     config.read(os.path.join('resources', 'config.ini'))
@@ -253,8 +250,8 @@ def game(screen, level):    # Game Loop
     direction = Direction.RIGHT    # Initial direction
     pygame.mixer.music.load(os.path.join('sounds', level.music))
     pygame.mixer.music.play(-1,0.0)
-    pygame.mixer.music.set_volume(float(config['config']['volume']))
-    #music.fade_music(float(config['config']['volume']), "in")
+    #pygame.mixer.music.set_volume(float(config['config']['volume']))
+    music.fade_music(float(config['config']['volume']), "in")
 
     fps = int(config['config']['fps'])
 
@@ -267,4 +264,5 @@ def game(screen, level):    # Game Loop
         REFRESH_CONTROLLER.tick(fps)
         time.sleep(SPEED)
         if gameover:
+            del snake
             return SCORE

@@ -16,6 +16,7 @@ parser.add_argument('-b', '--background', metavar='', type=str, help='Set own ma
 parser.add_argument('-m', '--music', metavar='', type=str, help='Set own mainmenu music', default='8_Bit_Fantasy_Adventure_Music.mp3')   
 parser.add_argument('-c', '--color', metavar='', type=str, help='Set snake color, supports basic colors', default='white')    
 args = parser.parse_args()
+
 ## General Game Settings ##
 pygame.init()    # Initialize Game
 
@@ -63,7 +64,7 @@ def get_username():
         
 def choose_level(screen_width, screen_height):
     txt_choose_level = font(2).render("Select Level:", True, "White")
-    btn_choose_level_0 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Fun Mode", font=font(1), base_color="White", hovering_color="Red")   
+    btn_choose_level_0 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Fun Mode", font=font(1), base_color="White", hovering_color="Red")
     btn_choose_level_1 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Level 1", font=font(1), base_color="White", hovering_color="Green")
     btn_choose_level_2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(1), base_color="White", hovering_color="Green")
     btn_choose_level_3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(1), base_color="White", hovering_color="Green")
@@ -117,13 +118,10 @@ def play():
     if score > 0:
         if isinstance(level, levels.Level):
             level_name = 'level'
-        
         if isinstance(level, levels.Level1):
             level_name = 'level1'
-
         if isinstance(level, levels.Level2):
             level_name = 'level2'
-
         if isinstance(level, levels.Level3):
             level_name = 'level3'
 
