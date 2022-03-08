@@ -149,12 +149,15 @@ def pause():
     volume = float(config['config']['volume'])
 
     while True:
-        pygame.mixer.music.set_volume(volume * 0.7)
+        pygame.mixer.music.set_volume(volume * 0.5)
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
                     pygame.mixer.music.set_volume(volume)
                     return
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
         pygame.display.update()
 
@@ -165,7 +168,7 @@ def game_over(screen):
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
     volume = float(config['config']['volume'])
-    pygame.mixer.music.set_volume(volume * 0.7)
+    pygame.mixer.music.set_volume(volume * 0.5)
     font = pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE * 2)
     render = font.render(f'Game Over!', True, pygame.Color(COLOR))
     rect = render.get_rect(center=(screen_width/2, screen_height/2-80))
