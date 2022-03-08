@@ -110,6 +110,7 @@ def play():
         pygame.mixer.music.pause()
         score = snake.game(WINDOW, level)
     print(username, score)
+    pygame.mixer.music.load(os.path.join('sounds', args.music))
     pygame.mixer.music.play()
     music.fade_music(VOLUME, "in")
         # PLAY_MOUSE_POS = pygame.mouse.get_pos()
