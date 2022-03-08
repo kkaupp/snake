@@ -320,7 +320,7 @@ def score_level3():
 def score():
     txt_score = font(2).render("Scoreboard", True, "White")
     rect_score = txt_score.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
-    btn_score_level0 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Fun Mode", font=font(1), base_color="White", hovering_color="Green")
+    btn_score_level0 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Fun Mode", font=font(1), base_color="White", hovering_color="Red")
     btn_score_level1 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Level 1", font=font(1), base_color="White", hovering_color="Green")
     btn_score_level2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(1), base_color="White", hovering_color="Green")
     btn_score_level3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(1), base_color="White", hovering_color="Green")
@@ -378,7 +378,6 @@ def resolution():
             btn_options_resolution_wqhd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="2560x1440", font=font(1), base_color="White", hovering_color="Green")
             btn_options_resolution_fullhd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="1920x1080", font=font(1), base_color="White", hovering_color="Green")
             btn_options_resolution_hd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="1280x720", font=font(1), base_color="White", hovering_color="Green")
-            btn_options_resolution_sd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.2), text_input="720x576", font=font(1), base_color="White", hovering_color="Green")
             btn_resolution_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(1), base_color="White", hovering_color="Green")
             start_width = WINDOW_WIDTH
             start_height = WINDOW_HEIGHT
@@ -388,7 +387,7 @@ def resolution():
         WINDOW.blit(txt_resolution, rect_resolution)
         mouse_pos = pygame.mouse.get_pos()
 
-        for button in [btn_options_resolution_ultrahd, btn_options_resolution_wqhd, btn_options_resolution_fullhd, btn_options_resolution_hd, btn_options_resolution_sd, btn_resolution_back]:
+        for button in [btn_options_resolution_ultrahd, btn_options_resolution_wqhd, btn_options_resolution_fullhd, btn_options_resolution_hd, btn_resolution_back]:
             button.changeColor(mouse_pos)
             button.update(WINDOW)
 
@@ -411,11 +410,6 @@ def resolution():
                     
                 if btn_options_resolution_hd.checkForInput(mouse_pos):
                     width, height = 1280, 720
-                    resolution_update(width, height)
-                    config_changed = True
-
-                if btn_options_resolution_sd.checkForInput(mouse_pos):
-                    width, height = 720, 576
                     resolution_update(width, height)
                     config_changed = True
                     
