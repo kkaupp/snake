@@ -152,7 +152,7 @@ def resolution():
             btn_options_resolution_fullhd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="1920x1080", font=font(1), base_color="White", hovering_color="Green")
             btn_options_resolution_hd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="1280x720", font=font(1), base_color="White", hovering_color="Green")
             btn_options_resolution_sd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.2), text_input="720x576", font=font(1), base_color="White", hovering_color="Green")
-            btn_resolution_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(2), base_color="White", hovering_color="Green")
+            btn_resolution_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(1), base_color="White", hovering_color="Green")
             start_width = WINDOW_WIDTH
             start_height = WINDOW_HEIGHT
             init = False
@@ -199,7 +199,7 @@ def resolution():
                             config.set('config', 'height', f'{height}')
                             config.write(configfile)
                             config_changed = False
-                        return
+                    return
 
             if event.type == pygame.QUIT:
                 pygame.quit()
