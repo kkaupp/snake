@@ -166,10 +166,17 @@ def game_over(screen):
     screen_height = int(config['config']['height']) // SCALE * SCALE
     volume = float(config['config']['volume'])
     pygame.mixer.music.set_volume(volume * 0.7)
-    font = pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * 3)
-    render = font.render(f'Game Over! SCORE: {SCORE}', True, pygame.Color(COLOR))
-    rect = render.get_rect(center=(screen_width/2, screen_height/2))   
-    screen.blit(render, rect) 
+    font = pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE * 2)
+    render = font.render(f'Game Over!', True, pygame.Color(COLOR))
+    rect = render.get_rect(center=(screen_width/2, screen_height/2-80))
+    screen.blit(render, rect)
+    render = font.render(f'SCORE: {SCORE}', True, pygame.Color("Blue"))
+    rect = render.get_rect(center=(screen_width/2, screen_height/2))
+    screen.blit(render, rect)
+    font = pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE * 1)
+    render = font.render(f'Press "Esc" for Main Menu', True, pygame.Color(COLOR))
+    rect = render.get_rect(center=(screen_width/2, screen_height/2+70))
+    screen.blit(render, rect)
     pygame.display.flip()
     pygame.mixer.Sound(os.path.join("sounds" ,config['config']['game_over'])).play()
     pause()
@@ -177,7 +184,7 @@ def game_over(screen):
     gameover = True
 
 def paint_hud(screen):
-    font = pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE*2)
+    font = pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE*2)
     render = font.render(f'SCORE: {SCORE}', True, pygame.Color(COLOR))
     rect = render.get_rect()
     screen.blit(render, rect) 

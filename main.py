@@ -36,11 +36,11 @@ import snake, levels, music
 
 
 def font(size):
-    return pygame.font.Font(os.path.join('resources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * size)
+    return pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE * size)
 
 def get_username():
     user_input = ''
-    txt_username = font(3).render('Enter Username and press Enter:', True, "White")
+    txt_username = font(1).render('Enter Username and press Enter:', True, "White")
     rect_txt_username = txt_username.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
     
     while True:
@@ -57,20 +57,20 @@ def get_username():
                     user_input += event.unicode
                 
         WINDOW.fill("Black")
-        edt_username = font(3).render(f'{user_input}', True, "White")
+        edt_username = font(2).render(f'{user_input}', True, "White")
         rect_edt_username = edt_username.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2))
         WINDOW.blit(txt_username, rect_txt_username)
         WINDOW.blit(edt_username, rect_edt_username)
         pygame.display.update()
         
 def choose_level(screen_width, screen_height):
-    txt_choose_level = font(3).render("Select Level:", True, "White")
+    txt_choose_level = font(2).render("Select Level:", True, "White")
     while True:
-        btn_choose_level_0 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Fun Mode", font=font(2), base_color="White", hovering_color="Green")
-        btn_choose_level_1 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Level 1", font=font(2), base_color="White", hovering_color="Green")
-        btn_choose_level_2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(2), base_color="White", hovering_color="Green")
-        btn_choose_level_3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(2), base_color="White", hovering_color="Green")
-        btn_choose_level_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(2), base_color="White", hovering_color="Green")
+        btn_choose_level_0 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Fun Mode", font=font(1), base_color="White", hovering_color="Red")
+        btn_choose_level_1 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Level 1", font=font(1), base_color="White", hovering_color="Green")
+        btn_choose_level_2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(1), base_color="White", hovering_color="Green")
+        btn_choose_level_3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(1), base_color="White", hovering_color="Green")
+        btn_choose_level_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(1), base_color="White", hovering_color="Green")
         rect_choose_level = txt_choose_level.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
 
         WINDOW.fill("Black")
@@ -138,7 +138,7 @@ def resolution():
     config_changed = False
     width = (args.width)
     height = (args.height)
-    txt_resolution = font(3).render("Resolution", True, "White")
+    txt_resolution = font(2).render("Resolution", True, "White")
     start_width = WINDOW_WIDTH
     start_height = WINDOW_HEIGHT
     init = True
@@ -147,11 +147,11 @@ def resolution():
         # Update the screen with initial start and every time the resolution is changed
         if start_height != WINDOW_HEIGHT or start_width != WINDOW_WIDTH or init == True:
             rect_resolution = txt_resolution.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
-            btn_options_resolution_ultrahd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="3840x2160", font=font(2), base_color="White", hovering_color="Green")
-            btn_options_resolution_wqhd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="2560x1440", font=font(2), base_color="White", hovering_color="Green")
-            btn_options_resolution_fullhd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="1920x1080", font=font(2), base_color="White", hovering_color="Green")
-            btn_options_resolution_hd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="1280x720", font=font(2), base_color="White", hovering_color="Green")
-            btn_options_resolution_sd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.2), text_input="720x576", font=font(2), base_color="White", hovering_color="Green")
+            btn_options_resolution_ultrahd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="3840x2160", font=font(1), base_color="White", hovering_color="Green")
+            btn_options_resolution_wqhd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="2560x1440", font=font(1), base_color="White", hovering_color="Green")
+            btn_options_resolution_fullhd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="1920x1080", font=font(1), base_color="White", hovering_color="Green")
+            btn_options_resolution_hd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="1280x720", font=font(1), base_color="White", hovering_color="Green")
+            btn_options_resolution_sd = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.2), text_input="720x576", font=font(1), base_color="White", hovering_color="Green")
             btn_resolution_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(2), base_color="White", hovering_color="Green")
             start_width = WINDOW_WIDTH
             start_height = WINDOW_HEIGHT
@@ -209,7 +209,7 @@ def resolution():
 
 def options():
     volume = float(config.get('config', 'volume'))
-    txt_options = font(3).render("Options", True, "White")
+    txt_options = font(2).render("Options", True, "White")
     start_width = WINDOW_WIDTH
     start_height = WINDOW_HEIGHT
     init = True
@@ -217,11 +217,11 @@ def options():
     while True:
         # Update the screen with initial start and every time the resolution is changed
         if start_height != WINDOW_HEIGHT or start_width != WINDOW_WIDTH or init == True:
-            btn_options_volume = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Volume", font=font(2), base_color="White", hovering_color="White")
-            btn_options_volume_down = Button(image=None, pos=(WINDOW_WIDTH/2 - SCALE*4, WINDOW_HEIGHT/3), text_input="-", font=font(2), base_color="White", hovering_color="Green")
-            btn_options_volume_up = Button(image=None, pos=(WINDOW_WIDTH/2 + SCALE*4, WINDOW_HEIGHT/3), text_input="+", font=font(2), base_color="White", hovering_color="Green")
-            btn_options_resolution = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Resolution", font=font(2), base_color="White", hovering_color="Green")
-            btn_options_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(2), base_color="White", hovering_color="Green")
+            btn_options_volume = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Volume", font=font(1), base_color="White", hovering_color="White")
+            btn_options_volume_down = Button(image=None, pos=(WINDOW_WIDTH/2 - SCALE*4, WINDOW_HEIGHT/3), text_input="-", font=font(1), base_color="White", hovering_color="Green")
+            btn_options_volume_up = Button(image=None, pos=(WINDOW_WIDTH/2 + SCALE*4, WINDOW_HEIGHT/3), text_input="+", font=font(1), base_color="White", hovering_color="Green")
+            btn_options_resolution = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Resolution", font=font(1), base_color="White", hovering_color="Green")
+            btn_options_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(1), base_color="White", hovering_color="Green")
             rect_options = txt_options.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
             start_width = WINDOW_WIDTH
             start_height = WINDOW_HEIGHT
@@ -281,7 +281,7 @@ def options():
 if __name__ == '__main__':
     backgroundimage = pygame.image.load(os.path.join("resources", args.background))
     pygame.display.set_caption('Snake by LFH')
-    txt_menu = font(3).render("MAIN MENU", True, "#b68f40")
+    txt_menu = font(3).render("MAIN MENU", True, "#cc2936")
     start_width = WINDOW_WIDTH
     start_height = WINDOW_HEIGHT
     init = True
@@ -289,9 +289,9 @@ if __name__ == '__main__':
     while True:
         # Update the screen with initial start and every time the resolution is changed
         if start_height != WINDOW_HEIGHT or start_width != WINDOW_WIDTH or init == True:
-            btn_play = Button(image=pygame.image.load("resources/rect_play.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="PLAY", font=font(2), base_color="#d7fcd4", hovering_color="White")
-            btn_options = Button(image=pygame.image.load("resources/rect_options.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), text_input="OPTIONS", font=font(2), base_color="#d7fcd4", hovering_color="White")
-            btn_quit = Button(image=pygame.image.load("resources/rect_quit.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.5), text_input="QUIT", font=font(2), base_color="#d7fcd4", hovering_color="White")
+            btn_play = Button(image=pygame.image.load("resources/button.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="PLAY", font=font(2), base_color="White", hovering_color="azure3")
+            btn_options = Button(image=pygame.image.load("resources/button.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), text_input="OPTIONS", font=font(2), base_color="White", hovering_color="azure3")
+            btn_quit = Button(image=pygame.image.load("resources/button.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.5), text_input="QUIT", font=font(2), base_color="White", hovering_color="azure3")
             rect_menu = txt_menu.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
             backgroundimage = pygame.transform.scale(backgroundimage, (WINDOW_WIDTH*1.5, WINDOW_HEIGHT*1.5))
             start_width = WINDOW_WIDTH
