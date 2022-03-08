@@ -100,6 +100,7 @@ def choose_level(screen_width, screen_height):
         pygame.display.update()
 
 def play():
+    score = 0
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
 
@@ -113,6 +114,9 @@ def play():
     pygame.mixer.music.load(os.path.join('sounds', args.music))
     pygame.mixer.music.play()
     music.fade_music(VOLUME, "in")
+
+    if score > 0:
+        pass
         # PLAY_MOUSE_POS = pygame.mouse.get_pos()
         # PLAY_BACK = Button(image=None, pos=(screen_width/2, screen_height/2), text_input="BACK", font=font(2), base_color="Black", hovering_color="Green")
         # PLAY_BACK.changeColor(PLAY_MOUSE_POS)

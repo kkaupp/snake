@@ -55,7 +55,7 @@ class Level2(Level):
     def __init__(self, width, height):
         super().__init__()
         self.background = 'space1.jpg'
-        self.music = 'EEEAAAOOO.mp3' #ToDo: new Music!
+        self.music = 'FF14_A_Long_Fall_The_Twinning_Theme_-_Guitar_Cover.mp3'
         self.textcolor = 'White'
         walls = [   [0, 0, SCALE, (height/9)*4, (255, 0, 0)], # Wall top left corner -> down
                     [0, 0, (width/9)*4, SCALE, (255, 0, 0)], # Wall top left corner -> right
