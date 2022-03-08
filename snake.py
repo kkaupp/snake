@@ -43,12 +43,13 @@ class Food(Moveble_object):
         screen.blit(self.image, self.rect)
 
 class Character(Moveble_object):
-    body = [[SCALE, SCALE*2]]
+    body = []
 
     def __init__(self, screen_width, screen_height):
         Moveble_object.__init__(self)
         self.position = [int((screen_width//SCALE//2)*SCALE - (SCALE/2)), int((screen_height//SCALE//2)*SCALE - (SCALE/2))]     # middle of the screen
         self.rect = pygame.Rect(self.position[0], self.position[1], SCALE, SCALE)
+        self.body = [[SCALE, SCALE*2]]
 
     def draw(self, screen):
         for body in self.body:

@@ -84,13 +84,13 @@ def choose_level(username, screen_width, screen_height):
     score = scorelib.get_score(username)
     button_enabled = [True, True]
 
-    if score.get('level1') >= 3:
+    if score.get('level1') >= 20:
         btn_choose_level_2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(1), base_color="White", hovering_color="Green")
     else:
         btn_choose_level_2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(1), base_color="Dimgray", hovering_color="Gray")
         button_enabled[0] = False
 
-    if score.get('level2') >= 3:
+    if score.get('level2') >= 20:
         btn_choose_level_3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(1), base_color="White", hovering_color="Green")
     else:
         btn_choose_level_3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(1), base_color="Dimgray", hovering_color="Gray")
