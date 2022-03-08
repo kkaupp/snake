@@ -17,7 +17,6 @@ parser.add_argument('-b', '--background', metavar='', type=str, help='Set own ma
 parser.add_argument('-m', '--music', metavar='', type=str, help='Set own mainmenu music', default='8_Bit_Fantasy_Adventure_Music.mp3')   
 parser.add_argument('-c', '--color', metavar='', type=str, help='Set snake color, supports basic colors', default='white')    
 args = parser.parse_args()
-
 ## General Game Settings ##
 pygame.init()    # Initialize Game
 
@@ -240,12 +239,12 @@ def options():
 
                 if btn_options_volume_down.checkForInput(mouse_pos):
                     if volume > 0:
-                        volume -= 0.1
+                        volume -= 0.05
                     pygame.mixer.music.set_volume(volume)
 
                 if btn_options_volume_up.checkForInput(mouse_pos):
-                    if volume < 1:
-                        volume += 0.1
+                    if volume < 0.5:
+                        volume += 0.05
                     pygame.mixer.music.set_volume(volume)
 
                 if btn_options_resolution.checkForInput(mouse_pos):
