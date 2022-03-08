@@ -103,14 +103,12 @@ def handle_keys(screen, direction):
             new_direction = Direction.RIGHT 
         # Slow down bro
         if ((event.key == pygame.K_UP or event.key == pygame.K_w) and direction == Direction.DOWN) or ((event.key == pygame.K_DOWN or event.key == pygame.K_s) and direction == Direction.UP) or ((event.key == pygame.K_LEFT or event.key == pygame.K_a) and direction == Direction.RIGHT) or ((event.key == pygame.K_RIGHT or event.key == pygame.K_d) and direction == Direction.LEFT): 
-            while SPEED < 1:
+            if SPEED < 1:
                 SPEED += 0.05
-                break
         # I am SPEED.
         if ((event.key == pygame.K_UP or event.key == pygame.K_w) and direction == Direction.UP) or ((event.key == pygame.K_DOWN or event.key == pygame.K_s) and direction == Direction.DOWN) or ((event.key == pygame.K_LEFT or event.key == pygame.K_a) and direction == Direction.LEFT) or ((event.key == pygame.K_RIGHT or event.key == pygame.K_d) and direction == Direction.RIGHT):
-            while SPEED > 0.051:
+            if SPEED > 0.051:
                 SPEED -= 0.05
-                break
     return new_direction
 
 def repaint(screen, snake, food, level):
@@ -124,8 +122,6 @@ def repaint(screen, snake, food, level):
     level.wall_list.draw(screen)
     food.draw(screen)
     snake.draw(screen)
-
-
 
 def pause_screen(screen):
     config.read(os.path.join('resources', 'config.ini'))
@@ -247,5 +243,4 @@ def game(screen, level):    # Game Loop
 
         if lose_logic(snake, level) or RETURN_TO_MENU:
             game_over(screen)
-            del snake
             return SCORE
