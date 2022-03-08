@@ -1,4 +1,4 @@
-import pygame, random, time, os, sys, configparser, argparse
+import pygame, random, time, os, configparser, music, sys
 from pygame.locals import *
 from enum import Enum
 ## ToDo: Komentare :(
@@ -7,21 +7,12 @@ __version__ = '4.2'
 
 ## Read config.ini ##
 config = configparser.ConfigParser()
-config.read(os.path.join('config.ini'))
+config.read(os.path.join('resources', 'config.ini'))
 SCALE = int(config['config']['scale']) // 2 * 2     # To ensure that it is a multiple of 2
-FPS = int(config['config']['fps'])
-global SCORE
-global SPEED
 SCORE = int(config['config']['score'])
 SPEED = float(config['config']['speed'])
-VOLUME = float(config['config']['volume'])
-WINDOW_WIDTH = int(config['config']['width']) // SCALE * SCALE
-WINDOW_HEIGHT = int(config['config']['height']) // SCALE * SCALE
-BACKGROUND = config['config']['background']
-COLOR = config['config']['color']
-
-BACKGROUND = pygame.image.load(os.path.join('ressources', BACKGROUND)).convert()
-BACKGROUND = pygame.transform.scale(BACKGROUND, (WINDOW_WIDTH, WINDOW_HEIGHT))
+COLOR = 'white'
+gameover = False
 
 ## Constants ##
 REFRESH_CONTROLLER = pygame.time.Clock()
@@ -38,24 +29,24 @@ class Moveble_object(pygame.sprite.Sprite):
         self.surface = pygame.Surface((SCALE,SCALE))
 
 class Food(Moveble_object):
-    def __init__(self):
+    def __init__(self, screen_width, screen_height):
         Moveble_object.__init__(self)
-        self.generate_new_food()
+        self.generate_new_food(screen_width, screen_height)
 
-    def generate_new_food(self):
-        foodimage = str(random.randrange(0, 3, 1))
-        self.image = pygame.image.load(os.path.join('ressources', f'{foodimage}food.png')).convert_alpha()
-        self.position = pygame.Rect(random.randrange(SCALE, WINDOW_WIDTH - SCALE, SCALE), random.randrange(SCALE, WINDOW_HEIGHT - SCALE, SCALE), SCALE, SCALE)
+    def generate_new_food(self, screen_width, screen_height):
+        foodimage = str(random.randrange(0, 7, 1))
+        self.image = pygame.image.load(os.path.join('resources', f'{foodimage}food.png')).convert_alpha()
+        self.rect = pygame.Rect(random.randrange(SCALE, screen_width - SCALE, SCALE), random.randrange(SCALE, screen_height - SCALE, SCALE), SCALE, SCALE)
         
     def draw(self, screen):
-        screen.blit(self.image, self.position)
+        screen.blit(self.image, self.rect)
 
 class Character(Moveble_object):
     body = [[SCALE, SCALE*2]]
 
-    def __init__(self):
+    def __init__(self, screen_width, screen_height):
         Moveble_object.__init__(self)
-        self.position = [int((WINDOW_WIDTH//SCALE//2)*SCALE - (SCALE/2)), int((WINDOW_HEIGHT//SCALE//2)*SCALE - (SCALE/2))]     # middle of the screen
+        self.position = [int((screen_width//SCALE//2)*SCALE - (SCALE/2)), int((screen_height//SCALE//2)*SCALE - (SCALE/2))]     # middle of the screen
         self.rect = pygame.Rect(self.position[0], self.position[1], SCALE, SCALE)
 
     def draw(self, screen):
@@ -63,7 +54,7 @@ class Character(Moveble_object):
             pygame.draw.circle(screen, pygame.Color(COLOR), (body[0], body[1]), int(SCALE/2))
         self.rect = pygame.Rect(self.position[0] - SCALE/2, self.position[1] - SCALE/2, SCALE, SCALE) # /2 due to the offcenterd position
 
-    def move(self, direction):
+    def move(self, direction, screen_width, screen_height):
         if direction == Direction.UP:
             self.position[1] -= SCALE
         if direction == Direction.DOWN:
@@ -73,35 +64,33 @@ class Character(Moveble_object):
         if direction == Direction.RIGHT:
             self.position[0] += SCALE
 
-        if self.position[0] > WINDOW_WIDTH:
+        if self.position[0] > screen_width:
             self.position[0] = int(0 + SCALE / 2)
         
         if self.position[0] < 0:
-            self.position[0] = int(WINDOW_WIDTH - SCALE / 2)
+            self.position[0] = int(screen_width - SCALE / 2)
 
-        if self.position[1] > WINDOW_HEIGHT:
+        if self.position[1] > screen_height:
             self.position[1] = int(0 + SCALE / 2)
 
         if self.position[1] < 0:
-            self.position[1] = int(WINDOW_HEIGHT - SCALE / 2)
+            self.position[1] = int(screen_height - SCALE / 2)
 
         self.body.insert(0, list(self.position))
 
-    def get_food(self, food):
+    def get_food(self, food, screen_width, screen_height):
         global SCORE
-        if self.position[0] - SCALE/2 == food.position[0] and self.position[1] - SCALE/2 == food.position[1]:
-            SCORE += 1
-            food.generate_new_food()
-        else:
-            self.body.pop()    # enlarge snake
+        SCORE += 1
+        pygame.mixer.Sound(os.path.join("sounds" ,config['config']['eat'])).play()
+        food.generate_new_food(screen_width, screen_height)
 
-def handle_keys(direction):
+def handle_keys(screen, direction):
     new_direction = direction   # Keep direction if no event
     global SPEED
     for event in [e for e in pygame.event.get() if e.type == pygame.KEYDOWN]:   # Only handle key events, ignore all other events
         # Pause
-        if event.key == pygame.K_SPACE:
-            pause()
+        if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
+            pause(screen, pause)
         # Change direction
         if (event.key == pygame.K_UP or event.key == pygame.K_w) and direction != Direction.DOWN:    # Can't go up, if down before 
             new_direction = Direction.UP 
@@ -111,7 +100,6 @@ def handle_keys(direction):
             new_direction = Direction.LEFT 
         if (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and direction != Direction.LEFT: 
             new_direction = Direction.RIGHT 
-
         # Slow down bro
         if ((event.key == pygame.K_UP or event.key == pygame.K_w) and direction == Direction.DOWN) or ((event.key == pygame.K_DOWN or event.key == pygame.K_s) and direction == Direction.UP) or ((event.key == pygame.K_LEFT or event.key == pygame.K_a) and direction == Direction.RIGHT) or ((event.key == pygame.K_RIGHT or event.key == pygame.K_d) and direction == Direction.LEFT): 
             while SPEED < 1:
@@ -125,12 +113,27 @@ def handle_keys(direction):
     return new_direction
 
 def repaint(screen, snake, food, level):
-    screen.blit(BACKGROUND, (0, 0))
+    config.read(os.path.join('resources', 'config.ini'))
+    screen_width = int(config['config']['width']) // SCALE * SCALE
+    screen_height = int(config['config']['height']) // SCALE * SCALE
+    backgroundimage = level.background
+    background = pygame.transform.scale(pygame.image.load(os.path.join('resources', backgroundimage)).convert(), (screen_width, screen_height))
+
+    screen.blit(background, (0, 0))
     level.wall_list.draw(screen)
     food.draw(screen)
     # Collision Check
     if pygame.sprite.spritecollideany(snake, level.wall_list):
         game_over(screen)
+
+    if pygame.sprite.spritecollideany(food, level.wall_list):
+        food.generate_new_food(screen_width, screen_height)
+
+    foods = [food]
+    if pygame.sprite.spritecollide(snake, foods, False):
+        snake.get_food(food, screen_width, screen_height)
+    else:
+        snake.body.pop()
 
     for blob in snake.body[1:]:
         if (snake.position[0] == blob[0] and snake.position[1] == blob[1]):
@@ -140,61 +143,127 @@ def repaint(screen, snake, food, level):
 
     snake.draw(screen)
 
-def pause():
-    paused = True
-    while paused:
-        pygame.mixer.music.set_volume(VOLUME * 0.7)
+
+
+def pause_screen(screen):
+    config.read(os.path.join('resources', 'config.ini'))
+    volume = float(config['config']['volume'])
+    screen_width = int(config['config']['width']) // SCALE * SCALE
+    screen_height = int(config['config']['height']) // SCALE * SCALE
+    font = pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE * 2)
+    render = font.render(f'Pause', True, pygame.Color(COLOR))
+    rect = render.get_rect(center=(screen_width/2, screen_height/2 - 30))
+    while True:
+        screen.blit(render, rect)
+        pygame.mixer.music.set_volume(volume * 0.5)
+        from button import Button
+        btn_pause_screen_back = Button(image=None, pos=(screen_width/6, screen_height/1.2), text_input="MENU", font=font, base_color=COLOR, hovering_color="Green")  
+        mouse_pos = pygame.mouse.get_pos()
+
+        for button in [btn_pause_screen_back]:
+            button.changeColor(mouse_pos)
+            button.update(screen)
+
         for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if btn_pause_screen_back.checkForInput(mouse_pos):
+                    return True
+
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    paused = False
-                    pygame.mixer.music.set_volume(VOLUME)
-                elif event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
+                    pygame.mixer.music.set_volume(volume)
+                    return
+
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
         pygame.display.update()
 
-## ToDo: Make it pretty, mit ein paar buttons und bessere aufteilung
-def game_over_screen(screen):
-    pygame.mixer.music.set_volume(VOLUME * 0.7)
-    font = pygame.font.Font(os.path.join('ressources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE * 3)
-    render = font.render(f'Game Over! SCORE: {SCORE}', True, pygame.Color('black'))
-    rect = render.get_rect()    # xD
-    rect.midtop = (WINDOW_WIDTH/2-SCALE, WINDOW_HEIGHT/2-SCALE)
-    screen.blit(render, rect) 
-    pygame.display.flip()
-
-def game_over(screen):
-    game_over_screen(screen)
-    pause()
-
-def quit():
+def pause(screen, mode):
+    config.read(os.path.join('config.ini'))
+    volume = float(config['config']['volume'])
+    
+    if mode == pause:
+        leave = pause_screen(screen)
+        if leave != True:
+            return
+        else:
+            global gameover
+            gameover = True
+            return
+            
     while True:
+        pygame.mixer.music.set_volume(volume * 0.5)
+
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key:
-                    pygame.quit()
-                    sys.exit()
+                if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
+                    pygame.mixer.music.set_volume(volume)
+                    return
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        pygame.display.update()
+    
+
+## ToDo: Make it pretty, mit ein paar buttons und bessere aufteilung    
+
+def game_over(screen):
+    config.read(os.path.join('resources', 'config.ini'))
+    screen_width = int(config['config']['width']) // SCALE * SCALE
+    screen_height = int(config['config']['height']) // SCALE * SCALE
+    volume = float(config['config']['volume'])
+    pygame.mixer.music.set_volume(volume * 0.5)
+    font = pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE * 2)
+    render = font.render(f'Game Over!', True, pygame.Color(COLOR))
+    rect = render.get_rect(center=(screen_width/2, screen_height/2-80))
+    screen.blit(render, rect)
+    render = font.render(f'SCORE: {SCORE}', True, pygame.Color("Blue"))
+    rect = render.get_rect(center=(screen_width/2, screen_height/2))
+    screen.blit(render, rect)
+    font = pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE * 1)
+    render = font.render(f'Press "Esc" for Main Menu', True, pygame.Color(COLOR))
+    rect = render.get_rect(center=(screen_width/2, screen_height/2+70))
+    screen.blit(render, rect)
+    pygame.display.flip()
+    pygame.mixer.Sound(os.path.join("sounds" ,config['config']['game_over'])).play()
+    pause(screen, 0)
+    global gameover
+    gameover = True
 
 def paint_hud(screen):
-    font = pygame.font.Font(os.path.join('ressources', 'fonts', 'AncientModernTales-a7Po.ttf'), SCALE*2)
-    render = font.render(f'SCORE: {SCORE}', True, pygame.Color('black'))
+    font = pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE*2)
+    render = font.render(f'SCORE: {SCORE}', True, pygame.Color(COLOR))
     rect = render.get_rect()
     screen.blit(render, rect) 
     pygame.display.flip()
 
 def game(screen, level):    # Game Loop
-    snake = Character()
-    food = Food()
+    global COLOR, gameover, SCORE
+    SCORE = 0
+    gameover = False
+    COLOR = level.textcolor
+    config.read(os.path.join('resources', 'config.ini'))
+    screen_width = int(config['config']['width']) // SCALE * SCALE
+    screen_height = int(config['config']['height']) // SCALE * SCALE
+    snake = Character(screen_width, screen_height)
+    food = Food(screen_width, screen_height)
     direction = Direction.RIGHT    # Initial direction
-    game_running = True
+    pygame.mixer.music.load(os.path.join('sounds', level.music))
+    pygame.mixer.music.play(-1,0.0)
+    music.fade_music(float(config['config']['volume']), "in")
 
-    while game_running:
-        direction = handle_keys(direction)    # User input determines direction
-        snake.move(direction)       
-        snake.get_food(food)
+    fps = int(config['config']['fps'])
+
+    while True:
+        direction = handle_keys(screen, direction)    # User input determines direction
+        snake.move(direction, screen_width, screen_height)       
         repaint(screen, snake, food, level)
         paint_hud(screen)
         pygame.display.update()     # Update Display
-        REFRESH_CONTROLLER.tick(FPS)
+        REFRESH_CONTROLLER.tick(fps)
         time.sleep(SPEED)
+        if gameover:
+            return SCORE
