@@ -63,18 +63,18 @@ def get_username():
         
 def choose_level(screen_width, screen_height):
     txt_choose_level = font(2).render("Select Level:", True, "White")
+    btn_choose_level_0 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Fun Mode", font=font(1), base_color="White", hovering_color="Red")   
+    btn_choose_level_1 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Level 1", font=font(1), base_color="White", hovering_color="Green")
+    btn_choose_level_2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(1), base_color="White", hovering_color="Green")
+    btn_choose_level_3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(1), base_color="White", hovering_color="Green")
+    btn_choose_level_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(1), base_color="White", hovering_color="Green")
+    rect_choose_level = txt_choose_level.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
+    WINDOW.fill("Black")
+    WINDOW.blit(txt_choose_level, rect_choose_level)
+    
     while True:
-        btn_choose_level_0 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Fun Mode", font=font(1), base_color="White", hovering_color="Red")
-        btn_choose_level_1 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Level 1", font=font(1), base_color="White", hovering_color="Green")
-        btn_choose_level_2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(1), base_color="White", hovering_color="Green")
-        btn_choose_level_3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(1), base_color="White", hovering_color="Green")
-        btn_choose_level_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(1), base_color="White", hovering_color="Green")
-        rect_choose_level = txt_choose_level.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
-
-        WINDOW.fill("Black")
-        WINDOW.blit(txt_choose_level, rect_choose_level)
         mouse_pos = pygame.mouse.get_pos()
-
+        
         for button in [btn_choose_level_0, btn_choose_level_1, btn_choose_level_2, btn_choose_level_3, btn_choose_level_back]:
             button.changeColor(mouse_pos)
             button.update(WINDOW)
@@ -129,20 +129,47 @@ def play():
 
         scorelib.set_score(username, level_name, score)
 
-        # PLAY_MOUSE_POS = pygame.mouse.get_pos()
-        # PLAY_BACK = Button(image=None, pos=(screen_width/2, screen_height/2), text_input="BACK", font=font(2), base_color="Black", hovering_color="Green")
-        # PLAY_BACK.changeColor(PLAY_MOUSE_POS)
-        # PLAY_BACK.update(WINDOW)
+def score_level1():
+    txt_score_level1 = font(2).render("Scoreboard ", True, "White")
+    start_width = WINDOW_WIDTH
+    start_height = WINDOW_HEIGHT
+    rect_score_level1 = txt_score_level1.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
 
-        # for event in pygame.event.get():
-        #     if event.type == pygame.QUIT:
-        #         pygame.quit()
-        #         sys.exit()
-        #     if event.type == pygame.MOUSEBUTTONDOWN:
-        #         if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
-        #             return
+def score():
+    txt_score = font(2).render("Scoreboard", True, "White")
+    start_width = WINDOW_WIDTH
+    start_height = WINDOW_HEIGHT
+    rect_score = txt_score.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
+    btn_score_level1 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Level 1", font=font(1), base_color="White", hovering_color="Green")
+    btn_score_level2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2.2), text_input="Level 2", font=font(1), base_color="White", hovering_color="Green")
+    btn_score_level3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 3", font=font(1), base_color="White", hovering_color="Green")
+    btn_score_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(1), base_color="White", hovering_color="Green")
+    WINDOW.fill("black")
+    WINDOW.blit(txt_score, rect_score)
 
-        # pygame.display.update()
+    while True:
+        mouse_pos = pygame.mouse.get_pos()
+
+        for button in [btn_score_level1, btn_score_level2, btn_score_level3, btn_score_back]:
+            button.changeColor(mouse_pos)
+            button.update(WINDOW)
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if btn_score_level1.checkForInput(mouse_pos):
+                    print('1')
+                if btn_score_level2.checkForInput(mouse_pos):
+                    print('2')
+                if btn_score_level3.checkForInput(mouse_pos):
+                    print('3')
+                if btn_score_back.checkForInput(mouse_pos):
+                    return
+
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        pygame.display.update()
     
 def resolution_update(width, height):
     global WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW
@@ -316,8 +343,9 @@ if __name__ == '__main__':
         # Update the screen with initial start and every time the resolution is changed
         if start_height != WINDOW_HEIGHT or start_width != WINDOW_WIDTH or init == True:
             btn_play = Button(image=pygame.image.load("resources/button.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="PLAY", font=font(2), base_color="White", hovering_color="azure3")
-            btn_options = Button(image=pygame.image.load("resources/button.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), text_input="OPTIONS", font=font(2), base_color="White", hovering_color="azure3")
-            btn_quit = Button(image=pygame.image.load("resources/button.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.5), text_input="QUIT", font=font(2), base_color="White", hovering_color="azure3")
+            btn_score = Button(image=pygame.image.load("resources/button.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), text_input="SCORE", font=font(2), base_color="White", hovering_color="azure3")
+            btn_options = Button(image=pygame.image.load("resources/button.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.5), text_input="OPTIONS", font=font(2), base_color="White", hovering_color="azure3")
+            btn_quit = Button(image=pygame.image.load("resources/button.png"), pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.2), text_input="QUIT", font=font(2), base_color="White", hovering_color="azure3")
             rect_menu = txt_menu.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
             backgroundimage = pygame.transform.scale(backgroundimage, (WINDOW_WIDTH*1.5, WINDOW_HEIGHT*1.5))
             start_width = WINDOW_WIDTH
@@ -328,7 +356,7 @@ if __name__ == '__main__':
         WINDOW.blit(txt_menu, rect_menu)
         mouse_pos = pygame.mouse.get_pos()
 
-        for button in [btn_play, btn_options, btn_quit]:
+        for button in [btn_play, btn_score, btn_options, btn_quit]:
             button.changeColor(mouse_pos)
             button.update(WINDOW)
         
@@ -339,6 +367,8 @@ if __name__ == '__main__':
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if btn_play.checkForInput(mouse_pos):
                     play()
+                if btn_score.checkForInput(mouse_pos):
+                    score()
                 if btn_options.checkForInput(mouse_pos):
                     options()
                 if btn_quit.checkForInput(mouse_pos):
