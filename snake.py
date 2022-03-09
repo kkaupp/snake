@@ -64,13 +64,34 @@ class Character(Moveble_object):
         self.body = [[SCALE, SCALE*2]]
 
     def draw(self, screen):
-        for body in self.body:
-            if self.body[0] == body:
+        #head_img =
+        body_img = pygame.image.load(os.path.join('resources', 'rainbow.png')).convert_alpha()
+        # body_corner_img = pygame.image.load(os.path.join('resources', 'rainbow_corner.png')).convert_alpha()
+
+
+        for part in range(0, len(self.body), 1):
+            if part == 0:
                 self.image = pygame.image.load(os.path.join('resources', 'cat.png')).convert_alpha()
             else:
-                self.image = pygame.image.load(os.path.join('resources', 'rainbow.png')).convert_alpha()
+                if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] < self.body[part][1]:    # Vertical up
+                    self.image = pygame.transform.rotate(body_img, 90)
+                if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] > self.body[part][1]:    # Vertical down
+                    self.image = pygame.transform.rotate(body_img, -90)
+                if self.body[part-1][0] > self.body[part][0] and self.body[part-1][1] == self.body[part][1]:    # to right (x_bodybefore > x_body, y_bodybefore = y_body)
+                    self.image = pygame.transform.rotate(body_img, 180)
+                if self.body[part-1][0] < self.body[part][0] and self.body[part-1][1] == self.body[part][1]:    # to left (x_bodybefore < x_body, y_bodybefore = y_body)
+                   self.image = body_img
+                # if len(self.body) > 2 and len(self.body) - part > 1:
+                #     if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] < self.body[part][1] :
+                #         self.image = pygame.transform.rotate(body_corner_img, 90)
+                #     if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] > self.body[part][1] and self.body[part][0] == self.body[part+1][0] and self.body[part][0] > self.body[part+1][0]:
+                #         self.image = pygame.transform.rotate(body_corner_img, 0)
+                #     if self.body[part-1][0] > self.body[part][0] and self.body[part-1][1] == self.body[part][1]:
+                #         self.image = pygame.transform.rotate(body_corner_img, 180)
+                #     if self.body[part-1][0] < self.body[part][0] and self.body[part-1][1] == self.body[part][1]:
+                #         self.image = pygame.transform.rotate(body_corner_img, -90)
 
-            self.rect = pygame.Rect(body[0], body[1], SCALE, SCALE)
+            self.rect = pygame.Rect(self.body[part][0], self.body[part][1], SCALE, SCALE)
             screen.blit(self.image, self.rect)
         self.rect = pygame.Rect(self.position[0], self.position[1], SCALE, SCALE)
 

@@ -1,1 +1,5 @@
-{"asdf": {"level": 0, "level1": 21, "level2": 27, "level3": 0}}
+{
+    "kevin": {"level": 19, "level1": 21, "level2": 27, "level3": 24},
+    "Johannes": {"level": 0, "level1": 27, "level2": 36, "level3": 8},
+    "Tatjana": {"level": 30, "level1": 22, "level2": 27, "level3": 17}
+}
