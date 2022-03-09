@@ -137,7 +137,6 @@ def play():
         music.fade_music(float(config['config']['volume']), "out")
         pygame.mixer.music.pause()
         score = snake.game(WINDOW, level)
-        print(username, score)
         pygame.mixer.music.load(os.path.join('sounds', args.music))
         pygame.mixer.music.play()
         music.fade_music(float(config['config']['volume']), "in")
@@ -155,7 +154,10 @@ def play():
         scorelib.set_score(username, level_name, score)
 
 def score_level(level):
-    score_dict = scorelib.get_highscore(f'level{level}')
+    if level != 0:
+        score_dict = scorelib.get_highscore(f'level{level}')
+    else:
+        score_dict = scorelib.get_highscore(f'level')
     count = 0
     pos = ['-', '-', '-']
     pos_score = ['-', '-', '-']
