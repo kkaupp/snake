@@ -137,6 +137,7 @@ def play():
         music.fade_music(float(config['config']['volume']), "out")
         pygame.mixer.music.pause()
         score = snake.game(WINDOW, level)
+        print(username, score)
         pygame.mixer.music.load(os.path.join('sounds', args.music))
         pygame.mixer.music.play()
         music.fade_music(float(config['config']['volume']), "in")
