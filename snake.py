@@ -66,26 +66,29 @@ class Character(Moveble_object):
     def draw(self, screen):
         #head_img =
         body_img = pygame.image.load(os.path.join('resources', 'rainbow.png')).convert_alpha()
-        # body_corner_img = pygame.image.load(os.path.join('resources', 'rainbow_corner.png')).convert_alpha()
+        body_corner_img = pygame.image.load(os.path.join('resources', 'rainbow_corner.png')).convert_alpha()
 
 
         for part in range(0, len(self.body), 1):
             if part == 0:
                 self.image = pygame.image.load(os.path.join('resources', 'cat.png')).convert_alpha()
             else:
-                if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] < self.body[part][1]:    # Vertical up
-                    self.image = pygame.transform.rotate(body_img, 90)
-                if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] > self.body[part][1]:    # Vertical down
-                    self.image = pygame.transform.rotate(body_img, -90)
-                if self.body[part-1][0] > self.body[part][0] and self.body[part-1][1] == self.body[part][1]:    # to right (x_bodybefore > x_body, y_bodybefore = y_body)
-                    self.image = pygame.transform.rotate(body_img, 180)
-                if self.body[part-1][0] < self.body[part][0] and self.body[part-1][1] == self.body[part][1]:    # to left (x_bodybefore < x_body, y_bodybefore = y_body)
-                   self.image = body_img
-                # if len(self.body) > 2 and len(self.body) - part > 1:
+                if len(self.body) - part > 1: #len(self.body) > 2: #
+                    if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] < self.body[part][1]:# and self.body[part][0] == self.body[part+1][0] and self.body[part][0] > self.body[part+1][0]:    # Vertical up
+                        self.image = pygame.transform.rotate(body_img, 90)
+                    if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] > self.body[part][1]:# and self.body[part][0] == self.body[part+1][0] and self.body[part][0] < self.body[part+1][0]:    # Vertical down
+                        self.image = pygame.transform.rotate(body_img, -90)
+                    if self.body[part-1][0] > self.body[part][0] and self.body[part-1][1] == self.body[part][1]:# and self.body[part][0] < self.body[part+1][0] and self.body[part][0] == self.body[part+1][0]:    # to right (x_bodybefore > x_body, y_bodybefore = y_body)
+                        self.image = pygame.transform.rotate(body_img, 180)
+                    if self.body[part-1][0] < self.body[part][0] and self.body[part-1][1] == self.body[part][1]:# and self.body[part][0] > self.body[part+1][0] and self.body[part][0] == self.body[part+1][0]:    # to left (x_bodybefore < x_body, y_bodybefore = y_body)
+                        self.image = body_img
+                    if self.body[part-1][0] > self.body[part][0] and self.body[part-1][1] == self.body[part][1] and self.body[part][0] == self.body[part+1][0] and self.body[part][0] > self.body[part+1][0]:
+                        self.image = pygame.transform.rotate(body_corner_img, 0)
+                else:
+                    self.image = body_img
                 #     if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] < self.body[part][1] :
                 #         self.image = pygame.transform.rotate(body_corner_img, 90)
-                #     if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] > self.body[part][1] and self.body[part][0] == self.body[part+1][0] and self.body[part][0] > self.body[part+1][0]:
-                #         self.image = pygame.transform.rotate(body_corner_img, 0)
+                #     
                 #     if self.body[part-1][0] > self.body[part][0] and self.body[part-1][1] == self.body[part][1]:
                 #         self.image = pygame.transform.rotate(body_corner_img, 180)
                 #     if self.body[part-1][0] < self.body[part][0] and self.body[part-1][1] == self.body[part][1]:
@@ -106,13 +109,17 @@ class Character(Moveble_object):
             self.position[0] += SCALE
 
         if self.position[0] > screen_width:
-            self.position[0] = SCALE
+            #self.position[0] = SCALE
+            self.position[0] = 0
         if self.position[0] < 0:
-            self.position[0] = int(screen_width - SCALE)
+            self.position[0] = screen_width
+            #self.position[0] = int(screen_width - SCALE)
         if self.position[1] > screen_height:
-            self.position[1] = int(0 + SCALE)
+            #self.position[1] = int(0 + SCALE)
+            self.position[1] = 0
         if self.position[1] < 0:
-            self.position[1] = int(screen_height - SCALE)
+            self.position[1] = screen_height
+            #self.position[1] = int(screen_height - SCALE)
 
         # Circle Mode without Pictures. Just comment the block of 4 if clausels above
         # if self.position[0] > screen_width:

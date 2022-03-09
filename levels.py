@@ -51,8 +51,7 @@ class Level1(Level):
                 ]
 
         for parameter in walls:
-            wall = Wall(parameter[0], parameter[1], parameter[2], parameter[3], parameter[4])
-            self.wall_list.add(wall)
+            self.wall_list.add(Wall(parameter[0], parameter[1], parameter[2], parameter[3], parameter[4]))
 
 class Level2(Level):
     def __init__(self, width, height):
@@ -77,8 +76,7 @@ class Level2(Level):
                 ]
 
         for parameter in walls:
-            wall = Wall(parameter[0], parameter[1], parameter[2], parameter[3], parameter[4])
-            self.wall_list.add(wall)
+            self.wall_list.add(Wall(parameter[0], parameter[1], parameter[2], parameter[3], parameter[4]))
 
 class Level3(Level):
     def __init__(self, width, height):
@@ -106,5 +104,4 @@ class Level3(Level):
                 ]
 
         for parameter in walls:
-            wall = Wall(parameter[0], parameter[1], parameter[2], parameter[3], parameter[4])
-            self.wall_list.add(wall)
+            self.wall_list.add(Wall(parameter[0], parameter[1], parameter[2], parameter[3], parameter[4]))
