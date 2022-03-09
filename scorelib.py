@@ -18,7 +18,8 @@ def get_highscore(level):
             if key[0] == level and key[1] > 0:
                 dict_score[name] = key[1]
     
-    return {k: v for k, v in sorted(dict_score.items(), key=lambda item: item[1], reverse=True)}
+    hight_first = {k: v for k, v in sorted(dict_score.items(), key=lambda item: item[1], reverse=True)}
+    return {k: hight_first[k] for k in list(hight_first)[:3]} # returns the first 3 elements
 
 def get_score(player):
     """ Returns (Dictionary) all Scors on every level of the player
