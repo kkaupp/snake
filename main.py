@@ -14,7 +14,6 @@ parser.add_argument('-x', '--width', metavar='', type=int, help='Set specific sc
 parser.add_argument('-y', '--height', metavar='', type=int, help='Set specific screen height, default value: ' + str(WINDOW_HEIGHT), default=WINDOW_HEIGHT)    # Uses default of config.ini
 parser.add_argument('-b', '--background', metavar='', type=str, help='Set own mainmenu background image', default='pepe.png')    
 parser.add_argument('-m', '--music', metavar='', type=str, help='Set own mainmenu music', default='8_Bit_Fantasy_Adventure_Music.mp3')   
-parser.add_argument('-c', '--color', metavar='', type=str, help='Set snake color, supports basic colors', default='white')    
 args = parser.parse_args()
 
 ## General Game Settings ##
@@ -87,13 +86,13 @@ def choose_level(username, screen_width, screen_height):
     if score.get('level1') >= 20:
         btn_choose_level_2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(1), base_color="White", hovering_color="Green")
     else:
-        btn_choose_level_2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(1), base_color="Dimgray", hovering_color="Gray")
+        btn_choose_level_2 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.7), text_input="Level 2", font=font(1), base_color="Dimgray", hovering_color="Dimgray")
         button_enabled[0] = False
 
     if score.get('level2') >= 20:
         btn_choose_level_3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(1), base_color="White", hovering_color="Green")
     else:
-        btn_choose_level_3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(1), base_color="Dimgray", hovering_color="Gray")
+        btn_choose_level_3 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/1.4), text_input="Level 3", font=font(1), base_color="Dimgray", hovering_color="Dimgray")
         button_enabled[1] = False
 
     btn_choose_level_back = Button(image=None, pos=(WINDOW_WIDTH/6, WINDOW_HEIGHT/1.2), text_input="BACK", font=font(1), base_color="White", hovering_color="Green")
