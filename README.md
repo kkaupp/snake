@@ -14,6 +14,5 @@ python3 main.py
 deactivate
 
 # Without virtual environment
-cd 'path_to_snake_folder'
-pip install -r requirements.txt  
+cd 'path_to_snake_folder' && pip install -r requirements.txt  
 python3 main.py
