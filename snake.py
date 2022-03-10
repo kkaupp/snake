@@ -102,6 +102,7 @@ class Character(Moveble_object):
                     if self.body[part-1][0] < self.body[part][0] and self.body[part-1][1] == self.body[part][1]:# and self.body[part][0] > self.body[part+1][0] and self.body[part][0] == self.body[part+1][0]:    # to left (x_bodybefore < x_body, y_bodybefore = y_body)
                         self.image = body_img
                     # ToDO: Cornerparts facing into the right direction 
+                    # Will be finisched in the "day-one"-Patch ;)
                     if self.body[part-1][0] > self.body[part][0] and self.body[part-1][1] == self.body[part][1] and self.body[part][0] == self.body[part+1][0] and self.body[part][0] > self.body[part+1][0]:
                         self.image = pygame.transform.rotate(body_corner_img, 0)
                 #   if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] < self.body[part][1]:
