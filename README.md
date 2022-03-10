@@ -37,3 +37,5 @@ snake@game:~$ deactivate
 snake@game:~$ cd 'path_to_snake_folder' && pip install -r requirements.txt 
 snake@game:~$ python3 main.py
 ```
+
+<br>Unfinished Parts will be deliverd in the day one patch *cough*
