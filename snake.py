@@ -2,7 +2,7 @@ import pygame, random, time, os, configparser, music, sys
 from pygame.locals import *
 from enum import Enum
 from button import Button
-## ToDo: Komentare :(
+
 __author__ = 'Kevin Kaupp, Johannes Eulitz, Tatjana Aha'
 __version__ = '4.2'
 
@@ -19,31 +19,45 @@ RETURN_TO_MENU = False
 REFRESH_CONTROLLER = pygame.time.Clock()
 
 class Direction(Enum):
+    """ Enums for the direction. Defined by userinput """
     UP = 1
     DOWN = 2
     RIGHT = 3
     LEFT = 4
 
 class Moveble_object(pygame.sprite.Sprite):
+    """ Parentcalss for all  Movable objects. Movable means that the object can appear random on the screen and has no fixed position """
     def __init__(self):
         super().__init__()
         self.surface = pygame.Surface((SCALE,SCALE))
 
 class Food(Moveble_object):
+    """ Initalize the food. Child of Moveble_object() """
     def __init__(self, screen_width, screen_height):
         Moveble_object.__init__(self)
         self.generate_new_food(screen_width, screen_height)
 
     def generate_new_food(self, screen_width, screen_height):
+        """ Generates new food with a random image at a random position
+
+            Args:
+                screen_width, screen_height: int    - dimensions of the screen
+        """
         foodimage = str(random.randrange(0, 7, 1))
         self.image = pygame.image.load(os.path.join('resources', f'{foodimage}food.png')).convert_alpha()
         self.rect = pygame.Rect(random.randrange(SCALE, screen_width - SCALE, SCALE), random.randrange(SCALE, screen_height - SCALE, SCALE), SCALE, SCALE)
         
     def draw(self, screen):
+        """ Draws the Food on the screen
+
+            Args:
+                screen: pygame.Display  - Screen/Window of the game
+        """
         screen.blit(self.image, self.rect)
 
 class Character(Moveble_object):
-    body = []
+    """ Class to build a object, that can be moved by the user """
+    body = []   # List of the Snakeparts
 
     # Circle Mode without Pictures
     # def __init__(self, screen_width, screen_height):
@@ -64,16 +78,21 @@ class Character(Moveble_object):
         self.body = [[SCALE, SCALE*2]]
 
     def draw(self, screen):
-        #head_img =
+        """ Draws the Snake on the Screen
+
+            Args:
+                screen: pygame.Display  - Screen/Window of the game
+        """
         body_img = pygame.image.load(os.path.join('resources', 'rainbow.png')).convert_alpha()
         body_corner_img = pygame.image.load(os.path.join('resources', 'rainbow_corner.png')).convert_alpha()
 
 
-        for part in range(0, len(self.body), 1):
-            if part == 0:
+        for part in range(0, len(self.body), 1):            # Iterate through all bodyparts
+            if part == 0:       # First part is always the Head
                 self.image = pygame.image.load(os.path.join('resources', 'cat.png')).convert_alpha()
             else:
-                if len(self.body) - part > 1: #len(self.body) > 2: #
+                if len(self.body) - part > 1: #len(self.body) > 2: # More than 2 Parts left
+                    # Decide wich image of the body needs to be printed and in witch angle
                     if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] < self.body[part][1]:# and self.body[part][0] == self.body[part+1][0] and self.body[part][0] > self.body[part+1][0]:    # Vertical up
                         self.image = pygame.transform.rotate(body_img, 90)
                     if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] > self.body[part][1]:# and self.body[part][0] == self.body[part+1][0] and self.body[part][0] < self.body[part+1][0]:    # Vertical down
@@ -82,9 +101,16 @@ class Character(Moveble_object):
                         self.image = pygame.transform.rotate(body_img, 180)
                     if self.body[part-1][0] < self.body[part][0] and self.body[part-1][1] == self.body[part][1]:# and self.body[part][0] > self.body[part+1][0] and self.body[part][0] == self.body[part+1][0]:    # to left (x_bodybefore < x_body, y_bodybefore = y_body)
                         self.image = body_img
+                    # ToDO: Cornerparts facing into the right direction 
                     if self.body[part-1][0] > self.body[part][0] and self.body[part-1][1] == self.body[part][1] and self.body[part][0] == self.body[part+1][0] and self.body[part][0] > self.body[part+1][0]:
                         self.image = pygame.transform.rotate(body_corner_img, 0)
-                else:
+                #   if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] < self.body[part][1]:
+                #       self.image = pygame.transform.rotate(body_corner_img, 90)
+                #   if self.body[part-1][0] > self.body[part][0] and self.body[part-1][1] == self.body[part][1]:
+                #       self.image = pygame.transform.rotate(body_corner_img, 180)
+                #   if self.body[part-1][0] < self.body[part][0] and self.body[part-1][1] == self.body[part][1]:
+                #       self.image = pygame.transform.rotate(body_corner_img, -90)
+                else:   # End of the snake will be allways a body_img
                     if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] < self.body[part][1]:    # Vertical up
                         self.image = pygame.transform.rotate(body_img, 90)
                     if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] > self.body[part][1]:    # Vertical down
@@ -93,19 +119,20 @@ class Character(Moveble_object):
                         self.image = pygame.transform.rotate(body_img, 180)
                     if self.body[part-1][0] < self.body[part][0] and self.body[part-1][1] == self.body[part][1]:    # to left (x_bodybefore < x_body, y_bodybefore = y_body)
                         self.image = body_img
-                #     if self.body[part-1][0] == self.body[part][0] and self.body[part-1][1] < self.body[part][1] :
-                #         self.image = pygame.transform.rotate(body_corner_img, 90)
-                #     
-                #     if self.body[part-1][0] > self.body[part][0] and self.body[part-1][1] == self.body[part][1]:
-                #         self.image = pygame.transform.rotate(body_corner_img, 180)
-                #     if self.body[part-1][0] < self.body[part][0] and self.body[part-1][1] == self.body[part][1]:
-                #         self.image = pygame.transform.rotate(body_corner_img, -90)
+               
 
             self.rect = pygame.Rect(self.body[part][0], self.body[part][1], SCALE, SCALE)
             screen.blit(self.image, self.rect)
         self.rect = pygame.Rect(self.position[0], self.position[1], SCALE, SCALE)
 
     def move(self, direction, screen_width, screen_height):
+        """ Changes the Position of each Snakepart relative to the moving direction
+        
+            Args:
+                direction: enum                     - direction inwich the snake is moving
+                screen_width, screen_height: int    - dimensions of the screen
+        """
+        # Change Position
         if direction == Direction.UP:
             self.position[1] -= SCALE
         if direction == Direction.DOWN:
@@ -146,12 +173,24 @@ class Character(Moveble_object):
         self.body.insert(0, list(self.position))
 
     def get_food(self, food, screen_width, screen_height):
+        """ increments the score by 1 and triggers the generation of a new food
+
+            Args:
+                food: Food                          - eatable object
+                screen_width, screen_height: int    - dimensions of the screen
+        """
         global SCORE
         SCORE += 1
         pygame.mixer.Sound(os.path.join("sounds" ,config['config']['eat'])).play()
         food.generate_new_food(screen_width, screen_height)
 
 def handle_keys(screen, direction):
+    """ Handles userinput (w, a, s, d, ↑ ,↓ , →, ←) and setes moving direction
+
+        Args:
+            screen: pygame.Display  - Screen/Window of the game
+            direction: enum         - direction inwich the snake is moving
+    """
     new_direction = direction   # Keep direction if no event
     global SPEED
     for event in [e for e in pygame.event.get() if e.type == pygame.KEYDOWN]:   # Only handle key events, ignore all other events
@@ -178,6 +217,14 @@ def handle_keys(screen, direction):
     return new_direction
 
 def repaint(screen, snake, food, level):
+    """ Paints the screen the momentary game situation
+
+        Args:
+            screen: pygame.Display              - Screen/Window of the game
+            snake: Character                    - the char object we play with
+            food: Food                          - the food object
+            level: Level/Level1/Level2/Level3   - level we play in
+    """
     config.read(os.path.join('resources', 'config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
@@ -190,6 +237,11 @@ def repaint(screen, snake, food, level):
     snake.draw(screen)
 
 def pause_screen(screen):
+    """ Displays the pause screen Loop with buttons
+    
+        Args:
+            screen: pygame.Display  - Screen/Window of the game
+    """
     config.read(os.path.join('resources', 'config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
@@ -226,6 +278,13 @@ def pause_screen(screen):
         pygame.display.update()
 
 def lose_logic(snake, level):
+    """ contains the lose logic of our game (colide with a wall or one of your bodyparts
+    
+        Args:
+            snake: Character    - the char object we play with
+            food: Food          - the food object
+
+    """
     # Collision Check
     if pygame.sprite.spritecollideany(snake, level.wall_list):
         return True
@@ -237,6 +296,11 @@ def lose_logic(snake, level):
             continue
 
 def game_over(screen):
+    """ Displays the game over screen Loop with buttons
+    
+        Args:
+            screen: pygame.Display  - Screen/Window of the game
+    """
     config.read(os.path.join('resources', 'config.ini'))
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
@@ -265,6 +329,11 @@ def game_over(screen):
                     return
 
 def paint_hud(screen):
+    """ Paints the hud with the score onto the screen
+
+        Args:
+            screen: pygame.Display  - Screen/Window of the game
+    """
     font = pygame.font.Font(os.path.join('resources', 'fonts', 'PublicPixel-0W6DP.ttf'), SCALE*2)
     render = font.render(f'SCORE: {SCORE}', True, pygame.Color(COLOR))
     rect = render.get_rect()
@@ -272,6 +341,11 @@ def paint_hud(screen):
     pygame.display.flip()
 
 def game(screen, level):    # Game Loop
+    """ The Main gameloop. Handles Userinput, checks gamelogic, paints the screen
+        Args:
+            screen: pygame.Display              - Screen/Window of the game
+            level: Level/Level1/Level2/Level3   - level we play in
+    """
     global COLOR, SCORE, RETURN_TO_MENU
     RETURN_TO_MENU = False
     SCORE = 0
@@ -292,9 +366,11 @@ def game(screen, level):    # Game Loop
         direction = handle_keys(screen, direction)    # User input determines direction
         snake.move(direction, screen_width, screen_height)  
 
+        # Generate new food when the food spawned within a wall
         if pygame.sprite.spritecollideany(food, level.wall_list):
             food.generate_new_food(screen_width, screen_height)
 
+        # Check if the snake colides with a food and ate it
         foods = [food]
         if pygame.sprite.spritecollide(snake, foods, False):
             snake.get_food(food, screen_width, screen_height)
@@ -305,7 +381,7 @@ def game(screen, level):    # Game Loop
         paint_hud(screen)
         pygame.display.update()     # Update Display      
         REFRESH_CONTROLLER.tick(fps)
-        time.sleep(SPEED)
+        time.sleep(SPEED)           # Used to display the speed of the game
 
         if lose_logic(snake, level) or RETURN_TO_MENU:
             game_over(screen)
