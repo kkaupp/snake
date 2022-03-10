@@ -1,3 +1,6 @@
+# The following code was partially copied from another pygame project, as we could not find a better solution by ourselves!
+# Used for simple creation of customizable Buttons
+
 class Button():
 	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
 		self.image = image
