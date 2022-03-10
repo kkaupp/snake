@@ -18,6 +18,7 @@ args = parser.parse_args()
 
 ## General Game Settings ##
 pygame.init()    # Initialize Game
+pygame.mixer.init() # Initialize Audiomixer
 
 ## Music ##
 pygame.mixer.music.load(os.path.join('sounds', args.music))         # Loads main menu music
@@ -127,6 +128,7 @@ def choose_level(username, screen_width, screen_height):
         pygame.display.update()
 
 def play():
+    """ Function to start the game in the snake.py. Also sets the recieved score via the scorelib.py into the json file """
     score = 0
     screen_width = int(config['config']['width']) // SCALE * SCALE
     screen_height = int(config['config']['height']) // SCALE * SCALE
@@ -141,7 +143,7 @@ def play():
         pygame.mixer.music.play()
         music.fade_music(float(config['config']['volume']), "in")
 
-    if score > 0:
+    if score > 0:           # Get the type level the user played
         if isinstance(level, levels.Level):
             level_name = 'level'
         if isinstance(level, levels.Level1):
@@ -154,6 +156,11 @@ def play():
         scorelib.set_score(username, level_name, score)
 
 def score_level(level):
+    """ Visulizes the leaderboard with the highscores after the user decided wich level
+
+        Args:
+            level: int  - Number of the level the user want to see the scoreboard of
+    """
     if level != 0:
         score_dict = scorelib.get_highscore(f'level{level}')
     else:
@@ -206,6 +213,7 @@ def score_level(level):
         pygame.display.update()
 
 def score():
+    """ Change to the screen wich allows the user to see the score """
     txt_score = font(2).render("Scoreboard", True, "White")
     rect_score = txt_score.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/6))
     btn_score_level0 = Button(image=None, pos=(WINDOW_WIDTH/2, WINDOW_HEIGHT/3), text_input="Fun Mode", font=font(1), base_color="White", hovering_color="Red")
@@ -244,12 +252,18 @@ def score():
         pygame.display.update()
     
 def resolution_update(width, height):
+    """ Changes the Window dimensions to the selected resoution
+
+        Args:
+            width, height: int  - selected width and height of the screen
+    """
     global WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW
     WINDOW_WIDTH = width // SCALE * SCALE
     WINDOW_HEIGHT = height // SCALE * SCALE
     WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 def resolution():
+    """ displays the reolution menu in settings. Allows the user to select the desired resolution """
     config_changed = False
     width = (args.width)
     height = (args.height)
@@ -279,7 +293,7 @@ def resolution():
             button.changeColor(mouse_pos)
             button.update(WINDOW)
 
-        for event in pygame.event.get():
+        for event in pygame.event.get():        # executes resolution_update() for the selected reolution
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if btn_options_resolution_ultrahd.checkForInput(mouse_pos):
                     width, height = 3840, 2160
@@ -317,8 +331,9 @@ def resolution():
         pygame.display.update()
 
 def options():
+    """ Options screen where the user can change resolution and volume settings """
     volume = float(config.get('config', 'volume'))
-    muted_volume = float(config.get('config', 'muted_volume'))
+    muted_volume = float(config.get('config', 'muted_volume'))  # Save the selected Volume before muting the volume
     txt_options = font(2).render("Options", True, "White")
     start_width = WINDOW_WIDTH
     start_height = WINDOW_HEIGHT
@@ -384,6 +399,7 @@ def options():
 
    
 if __name__ == '__main__':
+    """ Main function of the Program. Displays the Main menu, Manages the input and navigates to all desired Screens. While-Loop is Fallback before quitting"""
     backgroundimage = pygame.image.load(os.path.join("resources", args.background))
     pygame.display.set_caption('Snake by LFH')
     txt_menu = font(3).render("MAIN MENU", True, "#cc2936")
